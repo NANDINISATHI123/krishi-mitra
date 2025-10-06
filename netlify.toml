@@ -1,0 +1,11 @@
+# This configuration file tells Netlify how to handle your site's deployment.
+[build]
+  # We don't have a build command for this simple static site.
+  command = ""
+  # The publish directory is the root.
+  publish = "/"
+
+# This is the most important part for fixing your issue.
+# It tells Netlify's asset processor to skip all files.
+[asset_optimization]
+  skip_processing = true
