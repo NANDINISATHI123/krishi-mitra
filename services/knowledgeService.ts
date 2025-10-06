@@ -1,23 +1,11 @@
-
 import { KnowledgeAnswer, QuestionHistory, Bookmark } from '../types';
-// FIX: Use the correct `GoogleGenAI` class as per guidelines.
 import { GoogleGenAI, Type } from '@google/genai';
 import { Language } from '../lib/translations';
 import { supabase } from '../lib/supabaseClient';
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-// IMPORTANT: The API key is hardcoded here because this is a "no-build-step" application.
-// Netlify's environment variables are not accessible in the browser for this type of static site.
-const API_KEY = 'AIzaSyC_5T97s0p44Net_fHc0O_zRE747liRyBg';
-
 export const getKnowledgeAnswer = async (query: string, lang: Language): Promise<KnowledgeAnswer> => {
-    if (!API_KEY) {
-        console.error("Gemini API key is missing. Falling back to mock answer.");
-        return getMockKnowledgeAnswer(query);
-    }
-    const ai = new GoogleGenAI({ apiKey: API_KEY });
-
     const langInstruction = lang === 'te' ? 'You MUST respond only in the Telugu language.' : 'Please provide the answer in English.';
     const prompt = `
         You are an expert in organic and sustainable farming, specifically for small-scale farmers in India. 
@@ -44,48 +32,35 @@ export const getKnowledgeAnswer = async (query: string, lang: Language): Promise
     };
 
     try {
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
-            contents: prompt,
-            config: {
-                responseMimeType: "application/json",
-                responseSchema: schema,
-            },
+        const proxyResponse = await fetch('/.netlify/functions/gemini-proxy', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: 'getKnowledgeAnswer',
+                payload: { prompt, schema }
+            })
         });
 
-        const resultJson = JSON.parse(response.text);
+        if (!proxyResponse.ok) {
+            const errorBody = await proxyResponse.json();
+            throw new Error(errorBody.error || `Proxy request failed with status ${proxyResponse.status}`);
+        }
+        
+        const result = await proxyResponse.json();
+        const resultJson = JSON.parse(result.text);
 
         return {
             question: query,
             answer: resultJson.answer,
-            likes: Math.floor(Math.random() * 20), // mock
-            dislikes: Math.floor(Math.random() * 3), // mock
+            likes: 0,
+            dislikes: 0,
             related: resultJson.related_questions || [],
         };
 
     } catch (error) {
-        console.error("Gemini API call for knowledge base failed:", error);
-        // Fallback to the old method if the new one fails, for resilience
-        return getMockKnowledgeAnswer(query);
+        console.error("Secure knowledge base call failed:", error);
+        throw new Error("Failed to get an answer. Please try again.");
     }
-};
-
-
-export const getMockKnowledgeAnswer = async (query: string): Promise<KnowledgeAnswer> => {
-    await delay(1000);
-    console.log('Answering query:', query);
-    
-    return {
-        question: query,
-        answer: "Jeevamrutham is a microbial culture that enriches the soil. To prepare it, mix 10 kg of cow dung and 10 litres of cow urine in 200 litres of water. Add 2 kg of jaggery, 2 kg of pulse flour, and a handful of soil from your farm. Stir well and let it ferment for 48 hours. It's then ready to be applied to the soil.",
-        likes: 12,
-        dislikes: 1,
-        related: [
-            "How to prepare Panchagavya?",
-            "What are the benefits of organic fertilizers?",
-            "Best composting methods for small farms",
-        ]
-    };
 };
 
 // --- History and Bookmarks ---
