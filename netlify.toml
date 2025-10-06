@@ -1,0 +1,16 @@
+# This file configures Netlify's build and deploy settings.
+[build]
+  # This project has no build step, so the build command is empty.
+  command = ""
+  
+  # The public files are in the root directory, not a 'dist' folder.
+  # Use "." to specify the root directory. This is the fix.
+  publish = "."
+  
+  # Specifies the directory where our serverless functions are located.
+  functions = "netlify/functions"
+
+# This is important to prevent Netlify from renaming assets,
+# which breaks paths in manifest.json and service-worker.js.
+[asset_optimization]
+  skip_processing = true
