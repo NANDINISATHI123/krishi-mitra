@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Krishi Mitra",
+  "description": "An AI-powered organic farming assistant for small-scale and tribal farmers, offering multilingual support, offline capabilities, AI crop diagnosis, weather alerts, and community features.",
+  "requestFramePermissions": [
+    "microphone",
+    "geolocation"
+  ]
+}

@@ -1,0 +1,12 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="leafGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color: #A3C585" />
+            <stop offset="100%" style="stop-color: #6B8E23" />
+        </linearGradient>
+    </defs>
+    <path
+        fill="url(#leafGradient)"
+        d="M50,10 C20,25 20,60 50,90 C80,60 80,25 50,10 Z M50,10 C60,30 40,30 50,10"
+    />
+</svg>
