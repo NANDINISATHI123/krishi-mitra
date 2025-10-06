@@ -4,6 +4,7 @@
 
 
 
+
 import React, { useState, useEffect } from 'react';
 import { AppContextProvider, useAppContext } from './context/AppContext';
 import Header from './components/Header';
@@ -18,26 +19,15 @@ import { CheckCircleIcon, CloseIcon, LogoIcon } from './components/Icons';
 
 const Router = () => {
     const { profile, user, profileLoading } = useAppContext();
-    const [hash, setHash] = useState('');
-    const [isClient, setIsClient] = useState(false);
+    const [hash, setHash] = useState(() => window.location.hash);
 
     useEffect(() => {
-        // This effect runs only on the client, after the initial render
-        setHash(window.location.hash);
-        setIsClient(true);
-
         const handleHashChange = () => {
             setHash(window.location.hash);
         };
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
     }, []);
-
-    // On the initial server-side or pre-hydration render, return null
-    // to ensure there's no mismatch with the client environment.
-    if (!isClient) {
-        return null;
-    }
 
     const path = hash.substring(1);
 

@@ -1,5 +1,6 @@
 
 
+
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Session, User } from '@supabase/supabase-js';
@@ -103,11 +104,16 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
     // Effect to set up auth listener and handle initial session
     useEffect(() => {
         const checkInitialSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            setSession(session);
-            setUser(session?.user ?? null);
-            await fetchProfileAndSet(session?.user ?? null);
-            setAuthLoading(false);
+            try {
+                const { data: { session } } = await supabase.auth.getSession();
+                setSession(session);
+                setUser(session?.user ?? null);
+                await fetchProfileAndSet(session?.user ?? null);
+            } catch (error) {
+                console.error("Error during initial session check:", error);
+            } finally {
+                setAuthLoading(false);
+            }
         };
         
         checkInitialSession();
