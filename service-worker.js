@@ -4,12 +4,12 @@ const CACHE_NAME = 'krishi-mitra-static-v6'; // INCREMENTED VERSION TO FORCE UPD
 const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v6'; // INCREMENTED VERSION
 
 // App Shell: All the essential files for the app to run.
-// Using explicitly relative paths to ensure they are resolved correctly.
+// Using absolute paths for robustness on deployed environments.
 const APP_SHELL_FILES = [
-  './',
-  './index.html',
-  './manifest.json',
-  './logo.svg',
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/logo.svg',
 ];
 
 
