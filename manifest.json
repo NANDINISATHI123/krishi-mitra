@@ -2,13 +2,13 @@
   "name": "Krishi Mitra",
   "short_name": "KrishiMitra",
   "description": "An AI-powered organic farming assistant for small-scale and tribal farmers, offering multilingual support, offline capabilities, AI crop diagnosis, weather alerts, and community features.",
-  "start_url": "/",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#FBF9F6",
   "theme_color": "#6B8E23",
   "icons": [
     {
-      "src": "/logo.svg",
+      "src": "./logo.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }

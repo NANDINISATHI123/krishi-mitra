@@ -1,16 +1,16 @@
 // --- Service Worker for Krishi Mitra ---
 
-const CACHE_NAME = 'krishi-mitra-static-v1';
-const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v1';
+const CACHE_NAME = 'krishi-mitra-static-v2';
+const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v2';
 
 // App Shell: All the essential files for the app to run.
 // Caching only the minimal shell prevents installation errors in environments
 // that transpile TSX/JS modules on the fly. Other assets are cached dynamically.
 const APP_SHELL_FILES = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/logo.svg',
+  './',
+  './index.html',
+  './manifest.json',
+  './logo.svg',
 ];
 
 
