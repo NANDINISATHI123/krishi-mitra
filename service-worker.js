@@ -1,11 +1,10 @@
 // --- Service Worker for Krishi Mitra ---
 
-const CACHE_NAME = 'krishi-mitra-static-v2';
-const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v2';
+const CACHE_NAME = 'krishi-mitra-static-v6'; // INCREMENTED VERSION TO FORCE UPDATE
+const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v6'; // INCREMENTED VERSION
 
 // App Shell: All the essential files for the app to run.
-// Caching only the minimal shell prevents installation errors in environments
-// that transpile TSX/JS modules on the fly. Other assets are cached dynamically.
+// Using explicitly relative paths to ensure they are resolved correctly.
 const APP_SHELL_FILES = [
   './',
   './index.html',
@@ -44,17 +43,12 @@ self.addEventListener('fetch', event => {
     const url = new URL(request.url);
 
     // --- STRATEGY 1: Network-Only for Cross-Origin ---
-    // If the request is for a different origin (e.g., Supabase API, Google Fonts, CDNs),
-    // always fetch from the network. This prevents CORS errors when the service worker
-    // tries to cache resources from third-party domains.
     if (url.origin !== self.location.origin) {
         event.respondWith(fetch(request));
         return;
     }
 
     // --- STRATEGY 2: Cache-First for Local Media ---
-    // For same-origin media files (like downloaded videos), serve from cache first for speed.
-    // Fall back to network if not in cache.
     if (url.pathname.match(/\.(mp4|jpg|png|jpeg|svg|gif)$/)) {
         event.respondWith(
             caches.match(request).then(response => {
@@ -67,8 +61,6 @@ self.addEventListener('fetch', event => {
             })
         );
     // --- STRATEGY 3: Stale-While-Revalidate for App Assets ---
-    // For the app shell and other same-origin assets (HTML, JS), serve from cache immediately
-    // for a fast perceived load, and then update the cache with a fresh version from the network.
     } else {
         event.respondWith(
             caches.match(request).then(response => {
