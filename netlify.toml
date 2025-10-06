@@ -1,0 +1,25 @@
+# This is the final, correct configuration for your Netlify site.
+[build]
+  # Your project has no build step.
+  command = ""
+  
+  # This fixes the "dist does not exist" error. Use "." for the root.
+  publish = "."
+  
+  # Location of your secure serverless functions.
+  functions = "netlify/functions"
+
+# This section fixes the "Failed to load module script" MIME type error.
+[[headers]]
+  for = "/*.tsx"
+  [headers.values]
+    Content-Type = "application/javascript; charset=utf-8"
+
+[[headers]]
+  for = "/*.ts"
+  [headers.values]
+    Content-Type = "application/javascript; charset=utf-8"
+
+# This prevents Netlify from renaming your files, which breaks paths.
+[asset_optimization]
+  skip_processing = true
