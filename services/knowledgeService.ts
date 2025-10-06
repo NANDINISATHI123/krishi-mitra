@@ -1,5 +1,4 @@
 
-
 import { KnowledgeAnswer, QuestionHistory, Bookmark } from '../types';
 // FIX: Use the correct `GoogleGenAI` class as per guidelines.
 import { GoogleGenAI, Type } from '@google/genai';
@@ -8,14 +7,15 @@ import { supabase } from '../lib/supabaseClient';
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-const API_KEY = process.env.API_KEY;
+// IMPORTANT: The API key is hardcoded here because this is a "no-build-step" application.
+// Netlify's environment variables are not accessible in the browser for this type of static site.
+const API_KEY = 'AIzaSyC_5T97s0p44Net_fHc0O_zRE747liRyBg';
 
 export const getKnowledgeAnswer = async (query: string, lang: Language): Promise<KnowledgeAnswer> => {
     if (!API_KEY) {
-        console.warn("Gemini API key not found. Falling back to mock knowledge answer.");
+        console.error("Gemini API key is missing. Falling back to mock answer.");
         return getMockKnowledgeAnswer(query);
     }
-    // FIX: Use the correct `GoogleGenAI` class as per guidelines.
     const ai = new GoogleGenAI({ apiKey: API_KEY });
 
     const langInstruction = lang === 'te' ? 'You MUST respond only in the Telugu language.' : 'Please provide the answer in English.';
@@ -45,7 +45,6 @@ export const getKnowledgeAnswer = async (query: string, lang: Language): Promise
 
     try {
         const response = await ai.models.generateContent({
-            // FIX: Use the correct model name as per guidelines.
             model: 'gemini-2.5-flash',
             contents: prompt,
             config: {

@@ -1,5 +1,4 @@
 
-
 import { Report } from '../types';
 // FIX: Use the correct `GoogleGenAI` class as per guidelines.
 import { GoogleGenAI, Type } from '@google/genai';
@@ -7,7 +6,9 @@ import { GoogleGenAI, Type } from '@google/genai';
 // Simulate a network delay
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 
-const API_KEY = process.env.API_KEY;
+// IMPORTANT: The API key is hardcoded here because this is a "no-build-step" application.
+// Netlify's environment variables are not accessible in the browser for this type of static site.
+const API_KEY = 'AIzaSyC_5T97s0p44Net_fHc0O_zRE747liRyBg';
 
 // Helper function to convert a File object to a GoogleGenerativeAI.Part object.
 const fileToGenerativePart = async (file: File) => {
@@ -27,9 +28,9 @@ type DiagnosisResult = Omit<Report, 'id' | 'user_id' | 'user_email' | 'created_a
 // --- Real AI Diagnosis using Gemini API ---
 export const getRealDiagnosis = async (imageFile: File): Promise<DiagnosisResult> => {
     if (!API_KEY) {
-        throw new Error("Gemini API key not found.");
+        console.error("Gemini API key is missing.");
+        throw new Error("Gemini API key not configured.");
     }
-    // FIX: Use the correct `GoogleGenAI` class as per guidelines.
     const ai = new GoogleGenAI({ apiKey: API_KEY });
 
     const imagePart = await fileToGenerativePart(imageFile);
@@ -72,7 +73,6 @@ Do not add any text or explanation outside of the JSON structure.`;
 
     try {
         const response = await ai.models.generateContent({
-          // FIX: Use the correct model name as per guidelines.
           model: 'gemini-2.5-flash',
           contents: { parts: [imagePart, { text: prompt }] },
           config: {
@@ -118,15 +118,13 @@ export const generateThumbnail = async (title: string, description: string): Pro
         console.warn("Gemini API key not found, skipping thumbnail generation.");
         return '';
     }
-    // FIX: Use the correct `GoogleGenAI` class as per guidelines.
     const ai = new GoogleGenAI({ apiKey: API_KEY });
 
     const prompt = `A vibrant, high-quality, photorealistic thumbnail for a farmer's educational video. The video is titled "${title}" and covers "${description}". The image should be visually appealing, relevant to organic farming, and must not contain any text. The aspect ratio must be 16:9.`;
     
     try {
         const response = await ai.models.generateImages({
-            // FIX: Use the correct image generation model as per guidelines.
-            model: 'imagen-4.0-generate-001',
+            model: 'imagen-4.0-generate-01',
             prompt: prompt,
             config: {
               numberOfImages: 1,
