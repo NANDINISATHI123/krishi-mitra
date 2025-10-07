@@ -1,15 +1,15 @@
-import { OfflineAction, KnowledgeAnswer } from '../types.js';
-import { addReport } from './reportService.js';
-import { updateTaskStatus } from './calendarService.js';
-import { addBookmark } from './knowledgeService.js';
-import { addOutcome } from './trackerService.js';
-import { addPost } from './communityService.js';
+import { OfflineAction, KnowledgeAnswer } from '../types.ts';
+import { addReport } from './reportService.ts';
+import { updateTaskStatus } from './calendarService.ts';
+import { addBookmark } from './knowledgeService.ts';
+import { addOutcome } from './trackerService.ts';
+import { addPost } from './communityService.ts';
 import { 
     saveTutorial, updateTutorial, deleteTutorial, 
     saveSupplier, updateSupplier, deleteSupplier 
-} from './contentService.js';
-import { getRealDiagnosis } from './geminiService.js';
-import { translations } from '../lib/translations.js';
+} from './contentService.ts';
+import { getRealDiagnosis } from './geminiService.ts';
+import { translations } from '../lib/translations.ts';
 
 type TranslationFunction = (key: keyof typeof translations['en']) => string;
 type ShowToastFunction = (message: string, type?: 'success' | 'error' | 'info') => void;

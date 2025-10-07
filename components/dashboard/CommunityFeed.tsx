@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useAppContext } from '../../context/AppContext.js';
-import { getPosts, addPost } from '../../services/communityService.js';
-import { addActionToQueue } from '../../services/offlineService.js';
-import { CommunityPost } from '../../types.js';
-import SkeletonLoader from '../SkeletonLoader.js';
-import { UploadIcon, CloseIcon, PendingIcon } from '../Icons.js';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getPosts, addPost } from '../../services/communityService.ts';
+import { addActionToQueue } from '../../services/offlineService.ts';
+import { CommunityPost } from '../../types.ts';
+import SkeletonLoader from '../SkeletonLoader.tsx';
+import { UploadIcon, CloseIcon, PendingIcon } from '../Icons.tsx';
 
 const CommunityFeed = () => {
     const { t, user, profile, isOnline, refreshData, refreshPendingCount, showToast } = useAppContext();

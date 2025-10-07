@@ -1,5 +1,5 @@
-import { Report } from '../types.js';
-import { supabase } from '../lib/supabaseClient.js';
+import { Report } from '../types.ts';
+import { supabase } from '../lib/supabaseClient.ts';
 
 // Type for the data needed to create a report, excluding DB-generated fields
 type ReportForCreation = Omit<Report, 'id' | 'created_at' | 'photo_url'>;

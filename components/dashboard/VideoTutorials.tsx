@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useAppContext } from '../../context/AppContext.js';
-import { getTutorials } from '../../services/contentService.js';
-import { generateThumbnail } from '../../services/geminiService.js';
-import { Tutorial } from '../../types.js';
-import SkeletonLoader from '../SkeletonLoader.js';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getTutorials } from '../../services/contentService.ts';
+import { generateThumbnail } from '../../services/geminiService.ts';
+import { Tutorial } from '../../types.ts';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const DB_NAME = 'krishi-mitra-videos';
 const STORE_NAME = 'offline_videos';

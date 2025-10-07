@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useAppContext } from '../context/AppContext.js';
-import { LogoIcon, ArrowLeftIcon } from '../components/Icons.js';
-import { supabase } from '../lib/supabaseClient.js';
+import { useAppContext } from '../context/AppContext.tsx';
+import { LogoIcon, ArrowLeftIcon } from '../components/Icons.tsx';
+import { supabase } from '../lib/supabaseClient.ts';
 
 const RegisterPage = () => {
     const { t, isOnline, showToast } = useAppContext();

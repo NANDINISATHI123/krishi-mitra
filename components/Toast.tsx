@@ -1,6 +1,6 @@
 import React from 'react';
-import { useAppContext } from '../context/AppContext.js';
-import { CheckCircleIcon, CloseIcon, ErrorIcon } from './Icons.js';
+import { useAppContext } from '../context/AppContext.tsx';
+import { CheckCircleIcon, CloseIcon, ErrorIcon } from './Icons.tsx';
 
 const ToastContainer = () => {
     const { toasts, removeToast } = useAppContext();

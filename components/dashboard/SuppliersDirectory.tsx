@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useAppContext } from '../../context/AppContext.js';
-import { getSuppliers } from '../../services/contentService.js';
-import { cacheContent, getCachedContent } from '../../services/offlineService.js';
-import { Supplier } from '../../types.js';
-import SkeletonLoader from '../SkeletonLoader.js';
-import { SearchIcon, CallIcon, MapIcon, DownloadIcon } from '../Icons.js';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getSuppliers } from '../../services/contentService.ts';
+import { cacheContent, getCachedContent } from '../../services/offlineService.ts';
+import { Supplier } from '../../types.ts';
+import SkeletonLoader from '../SkeletonLoader.tsx';
+import { SearchIcon, CallIcon, MapIcon, DownloadIcon } from '../Icons.tsx';
 
 const SuppliersDirectory = () => {
     const { t, isOnline } = useAppContext();

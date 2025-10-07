@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAppContext } from '../../context/AppContext.js';
-import { getTasksForMonth, getUserTaskStatuses, updateTaskStatus } from '../../services/calendarService.js';
-import { addActionToQueue } from '../../services/offlineService.js';
-import { CalendarTask } from '../../types.js';
-import { CheckCircleIcon, PendingIcon } from '../Icons.js';
-import SkeletonLoader from '../SkeletonLoader.js';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getTasksForMonth, getUserTaskStatuses, updateTaskStatus } from '../../services/calendarService.ts';
+import { addActionToQueue } from '../../services/offlineService.ts';
+import { CalendarTask } from '../../types.ts';
+import { CheckCircleIcon, PendingIcon } from '../Icons.tsx';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const AdvisoryCalendar = () => {
   const { t, user, language, isOnline, refreshData, refreshPendingCount, showToast } = useAppContext();

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useAppContext } from '../../context/AppContext.js';
-import { addFeedback } from '../../services/communityService.js';
-import { CloseIcon, CheckCircleIcon } from '../Icons.js';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { addFeedback } from '../../services/communityService.ts';
+import { CloseIcon, CheckCircleIcon } from '../Icons.tsx';
 
 interface FeedbackModalProps {
     onClose: () => void;

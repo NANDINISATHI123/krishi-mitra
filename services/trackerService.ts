@@ -1,5 +1,5 @@
-import { Outcome } from '../types.js';
-import { supabase } from '../lib/supabaseClient.js';
+import { Outcome } from '../types.ts';
+import { supabase } from '../lib/supabaseClient.ts';
 
 /**
  * Fetches harvest outcomes for a specific user.
