@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { useSpeech } from '../../hooks/useSpeech';
-import { getKnowledgeAnswer, getHistory, addHistory, getBookmarks, addBookmark } from '../../services/knowledgeService';
-import { addActionToQueue, cacheKnowledgeAnswer, getCachedKnowledgeAnswer } from '../../services/offlineService';
-import { KnowledgeAnswer, QuestionHistory, Bookmark } from '../../types';
-import { SearchIcon, BookmarkIcon, PendingIcon, SpeakerIcon, MicrophoneIcon } from '../Icons';
-import SkeletonLoader from '../SkeletonLoader';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { useSpeech } from '../../hooks/useSpeech.ts';
+import { getKnowledgeAnswer, getHistory, addHistory, getBookmarks, addBookmark } from '../../services/knowledgeService.ts';
+import { addActionToQueue, cacheKnowledgeAnswer, getCachedKnowledgeAnswer } from '../../services/offlineService.ts';
+import { KnowledgeAnswer, QuestionHistory, Bookmark } from '../../types.ts';
+import { SearchIcon, BookmarkIcon, PendingIcon, SpeakerIcon, MicrophoneIcon } from '../Icons.tsx';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const KnowledgeBase = () => {
     const { t, user, language, isOnline, refreshData, refreshPendingCount } = useAppContext();
@@ -198,7 +198,7 @@ const KnowledgeBase = () => {
                             {bookmarks.length > 0 ? bookmarks.map(b => (
                                 <li key={b.id} className="text-base text-gray-600 dark:text-gray-400 hover:text-primary cursor-pointer flex items-center justify-between gap-2" onClick={() => setAnswer({ ...b, likes: 0, dislikes: 0, related: [] })}>
                                     <span className="truncate" title={b.question}>{b.question}</span>
-                                    {b.id.startsWith('pending-') && <PendingIcon className="w-4 h-4 text-yellow-500 flex-shrink-0" title={t('pending_sync_status')} />}
+                                    {b.id.startsWith('pending-') && <span title={t('pending_sync_status')}><PendingIcon className="w-4 h-4 text-yellow-500 flex-shrink-0" /></span>}
                                 </li>
                             )) : <p className="text-sm text-gray-400">No bookmarks yet.</p>}
                         </ul>

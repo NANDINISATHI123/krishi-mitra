@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { getAllOutcomes } from '../../services/trackerService';
-import { Outcome } from '../../types';
-import SkeletonLoader from '../SkeletonLoader';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getAllOutcomes } from '../../services/trackerService.ts';
+import { Outcome } from '../../types.ts';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const SuccessTrackerViewer = () => {
     const { t } = useAppContext();

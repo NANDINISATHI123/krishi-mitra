@@ -1,14 +1,12 @@
 
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { getRealDiagnosis } from '../../services/geminiService';
-import { getReportsForUser, addReport } from '../../services/reportService';
-// FIX: Corrected import path.
-import { addActionToQueue } from '../../services/offlineService';
-import { Report } from '../../types';
-import { UploadIcon, CloseIcon, ArrowRightIcon } from '../Icons';
-import SkeletonLoader from '../SkeletonLoader';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getRealDiagnosis } from '../../services/geminiService.ts';
+import { getReportsForUser, addReport } from '../../services/reportService.ts';
+import { addActionToQueue } from '../../services/offlineService.ts';
+import { Report } from '../../types.ts';
+import { UploadIcon, CloseIcon, ArrowRightIcon } from '../Icons.tsx';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 // --- Image Cropper Component (since we cannot add new files/dependencies) ---
 // A simplified version of an image cropper.

@@ -1,15 +1,15 @@
 
-import { OfflineAction, KnowledgeAnswer } from '../types';
-import { addReport } from './reportService';
-import { updateTaskStatus } from './calendarService';
-import { addBookmark } from './knowledgeService';
-import { addOutcome } from './trackerService';
-import { addPost } from './communityService';
+import { OfflineAction, KnowledgeAnswer } from '../types.ts';
+import { addReport } from './reportService.ts';
+import { updateTaskStatus } from './calendarService.ts';
+import { addBookmark } from './knowledgeService.ts';
+import { addOutcome } from './trackerService.ts';
+import { addPost } from './communityService.ts';
 import { 
     saveTutorial, updateTutorial, deleteTutorial, 
     saveSupplier, updateSupplier, deleteSupplier 
-} from './contentService';
-import { getRealDiagnosis } from './geminiService';
+} from './contentService.ts';
+import { getRealDiagnosis } from './geminiService.ts';
 
 const DB_NAME = 'krishi-mitra-offline';
 const DB_VERSION = 2; // Incremented to add knowledge cache

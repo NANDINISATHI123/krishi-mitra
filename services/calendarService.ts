@@ -1,6 +1,6 @@
-import { CalendarTask, UserTaskStatus } from '../types';
-import { supabase } from '../lib/supabaseClient';
-import { mockCalendarTasks } from '../lib/data';
+import { CalendarTask, UserTaskStatus } from '../types.ts';
+import { supabase } from '../lib/supabaseClient.ts';
+import { mockCalendarTasks } from '../lib/data.ts';
 
 // --- For Employees ---
 export const getTasksForMonth = async (month: number): Promise<CalendarTask[]> => {

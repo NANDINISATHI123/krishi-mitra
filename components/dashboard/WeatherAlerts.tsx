@@ -1,13 +1,11 @@
 
-
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { getRealForecast, getMockWeatherRisk } from '../../services/weatherService';
-// FIX: Corrected import path.
-import { cacheContent, getCachedContent } from '../../services/offlineService';
-import { WeatherRisk } from '../../types';
-import { SunIcon, RainIcon, CloudyIcon, ThunderstormIcon } from '../Icons';
-import SkeletonLoader from '../SkeletonLoader';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getRealForecast, getMockWeatherRisk } from '../../services/weatherService.ts';
+import { cacheContent, getCachedContent } from '../../services/offlineService.ts';
+import { WeatherRisk } from '../../types.ts';
+import { SunIcon, RainIcon, CloudyIcon, ThunderstormIcon } from '../Icons.tsx';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const WeatherAlerts: React.FC = () => {
     const { t, language, isOnline } = useAppContext();

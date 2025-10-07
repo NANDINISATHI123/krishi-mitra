@@ -1,12 +1,13 @@
 
 
 
+
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import { supabase } from '../lib/supabaseClient';
+import { supabase } from '../lib/supabaseClient.ts';
 import { Session, User } from '@supabase/supabase-js';
-import { translations, Language } from '../lib/translations';
-import { Profile, Theme, FontSize } from '../types';
-import { getQueuedActions, processActionQueue } from '../services/offlineService';
+import { translations, Language } from '../lib/translations.ts';
+import { Profile, Theme, FontSize } from '../types.ts';
+import { getQueuedActions, processActionQueue } from '../services/offlineService.ts';
 
 interface AppContextType {
     session: Session | null;

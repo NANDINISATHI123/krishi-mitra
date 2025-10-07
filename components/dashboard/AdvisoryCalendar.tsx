@@ -1,13 +1,11 @@
 
-
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { getTasksForMonth, getUserTaskStatuses, updateTaskStatus } from '../../services/calendarService';
-// FIX: Corrected import path.
-import { addActionToQueue } from '../../services/offlineService';
-import { CalendarTask } from '../../types';
-import { CheckCircleIcon, PendingIcon } from '../Icons';
-import SkeletonLoader from '../SkeletonLoader';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getTasksForMonth, getUserTaskStatuses, updateTaskStatus } from '../../services/calendarService.ts';
+import { addActionToQueue } from '../../services/offlineService.ts';
+import { CalendarTask } from '../../types.ts';
+import { CheckCircleIcon, PendingIcon } from '../Icons.tsx';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const AdvisoryCalendar = () => {
   const { t, user, language, isOnline, refreshData, refreshPendingCount } = useAppContext();
@@ -90,7 +88,6 @@ const AdvisoryCalendar = () => {
                     ? 'text-green-500 bg-green-100 dark:bg-green-900/50' 
                     : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
-                  // FIX: Changed translation key to 'pending_sync_status' to use the correct value and avoid conflicts.
                   title={pendingUpdates.has(task.id) ? t('pending_sync_status') : (statuses[task.id] ? 'Mark as not done' : 'Mark as done')}
                 >
                   {pendingUpdates.has(task.id) ? (

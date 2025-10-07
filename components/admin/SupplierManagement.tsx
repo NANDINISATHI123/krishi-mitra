@@ -1,11 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { addActionToQueue } from '../../services/offlineService';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { addActionToQueue } from '../../services/offlineService.ts';
 import { 
     getSuppliers, saveSupplier, updateSupplier, deleteSupplier
-} from '../../services/contentService';
-import { Supplier } from '../../types';
-import SkeletonLoader from '../SkeletonLoader';
+} from '../../services/contentService.ts';
+import { Supplier } from '../../types.ts';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const SupplierManagement = () => {
     const { t, isOnline, refreshPendingCount, refreshData } = useAppContext();

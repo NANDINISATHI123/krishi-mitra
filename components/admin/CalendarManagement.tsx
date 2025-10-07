@@ -1,9 +1,10 @@
 
+
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { getTasks, saveTask, updateTask, deleteTask } from '../../services/calendarService';
-import { CalendarTask } from '../../types';
-import SkeletonLoader from '../SkeletonLoader';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getTasks, saveTask, updateTask, deleteTask } from '../../services/calendarService.ts';
+import { CalendarTask } from '../../types.ts';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const CalendarManagement = () => {
     const { t } = useAppContext();

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { getProfiles, updateProfileRole } from '../../services/profileService';
-import { Profile } from '../../types';
-import SkeletonLoader from '../SkeletonLoader';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getProfiles, updateProfileRole } from '../../services/profileService.ts';
+import { Profile } from '../../types.ts';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const UserManagement = () => {
     const { t } = useAppContext();

@@ -1,15 +1,16 @@
 
+
 import React, { useState } from 'react';
-import { useAppContext } from '../context/AppContext';
-import UserManagement from '../components/admin/UserManagement';
+import { useAppContext } from '../context/AppContext.tsx';
+import UserManagement from '../components/admin/UserManagement.tsx';
 // FIX: Corrected the import path to point to the actual file name.
-import TutorialManagement from '../components/admin/ContentManagement';
-import SupplierManagement from '../components/admin/SupplierManagement';
-import FeedbackViewer from '../components/admin/FeedbackViewer';
-import AiDiagnosisReports from '../components/admin/DangerReports';
-import SuccessTrackerViewer from '../components/admin/SuccessTrackerViewer';
-import CommunityFeedViewer from '../components/admin/CommunityFeedViewer';
-import CalendarManagement from '../components/admin/CalendarManagement';
+import TutorialManagement from '../components/admin/ContentManagement.tsx';
+import SupplierManagement from '../components/admin/SupplierManagement.tsx';
+import FeedbackViewer from '../components/admin/FeedbackViewer.tsx';
+import AiDiagnosisReports from '../components/admin/DangerReports.tsx';
+import SuccessTrackerViewer from '../components/admin/SuccessTrackerViewer.tsx';
+import CommunityFeedViewer from '../components/admin/CommunityFeedViewer.tsx';
+import CalendarManagement from '../components/admin/CalendarManagement.tsx';
 
 type AdminTab = 'users' | 'tutorials' | 'suppliers' | 'reports' | 'calendar' | 'outcomes' | 'community' | 'feedback';
 

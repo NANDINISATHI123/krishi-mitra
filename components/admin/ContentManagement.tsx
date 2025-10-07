@@ -1,11 +1,12 @@
+
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { addActionToQueue } from '../../services/offlineService';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { addActionToQueue } from '../../services/offlineService.ts';
 import { 
     getTutorials, saveTutorial, updateTutorial, deleteTutorial
-} from '../../services/contentService';
-import { Tutorial } from '../../types';
-import SkeletonLoader from '../SkeletonLoader';
+} from '../../services/contentService.ts';
+import { Tutorial } from '../../types.ts';
+import SkeletonLoader from '../SkeletonLoader.tsx';
 
 const TutorialManagement = () => {
     const { t, isOnline, refreshPendingCount, refreshData } = useAppContext();

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useAppContext } from '../context/AppContext';
-import { supabase } from '../lib/supabaseClient';
-import { LogoIcon, SunIcon, MoonIcon, MenuIcon, CloseIcon, LogoutIcon } from './Icons';
+import { useAppContext } from '../context/AppContext.tsx';
+import { supabase } from '../lib/supabaseClient.ts';
+import { LogoIcon, SunIcon, MoonIcon, MenuIcon, CloseIcon, LogoutIcon } from './Icons.tsx';
 
 const Header = () => {
   const { theme, toggleTheme, language, setLanguage, t, profile, isSidebarOpen, setIsSidebarOpen } = useAppContext();

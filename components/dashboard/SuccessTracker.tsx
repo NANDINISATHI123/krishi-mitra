@@ -1,12 +1,11 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAppContext } from '../../context/AppContext';
-import { getOutcomes, addOutcome } from '../../services/trackerService';
-// FIX: Corrected import path.
-import { addActionToQueue } from '../../services/offlineService';
-import { Outcome } from '../../types';
-import SkeletonLoader from '../SkeletonLoader';
-import { PendingIcon } from '../Icons';
+import { useAppContext } from '../../context/AppContext.tsx';
+import { getOutcomes, addOutcome } from '../../services/trackerService.ts';
+import { addActionToQueue } from '../../services/offlineService.ts';
+import { Outcome } from '../../types.ts';
+import SkeletonLoader from '../SkeletonLoader.tsx';
+import { PendingIcon } from '../Icons.tsx';
 
 const SuccessTracker = () => {
     const { t, user, isOnline, refreshData, refreshPendingCount } = useAppContext();
@@ -105,7 +104,7 @@ const SuccessTracker = () => {
                                     <tr key={o.id} className={`border-b dark:border-gray-700 last:border-b-0 ${o.id.startsWith('pending-') ? 'opacity-70' : ''}`}>
                                         <td className="p-2 flex items-center gap-2">
                                             {new Date(o.date).toLocaleDateString()}
-                                            {o.id.startsWith('pending-') && <PendingIcon className="w-4 h-4 text-yellow-500" title={t('pending_sync_status')} />}
+                                            {o.id.startsWith('pending-') && <span title={t('pending_sync_status')}><PendingIcon className="w-4 h-4 text-yellow-500" /></span>}
                                         </td>
                                         <td className="p-2 font-semibold">{o.crop_name}</td>
                                         <td className="p-2">{o.yield_amount} {o.yield_unit}</td>
