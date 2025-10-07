@@ -19,6 +19,18 @@
     <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 
     <script>
+      // --- FIX: Register Service Worker as early as possible ---
+      if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/service-worker.js')
+              .then(registration => {
+                  console.log('ServiceWorker registration successful with scope: ', registration.scope);
+              })
+              .catch(error => {
+                  console.log('ServiceWorker registration failed: ', error);
+              });
+      }
+      // --- END FIX ---
+
       // --- DEBUG SCRIPT ---
       document.addEventListener('DOMContentLoaded', () => {
         console.log('--- Krishi Mitra Debug Paths ---');
@@ -71,8 +83,8 @@
 </head>
   <body>
     <div id="root"></div>
-    <!-- FIX: Explicitly tell Babel to use React and TypeScript presets -->
-    <script type="text/babel" data-presets="react,typescript" data-type="module" src="index.tsx"></script>
+    <!-- FIX: Point directly to .tsx file, allowing the Service Worker to handle the MIME type. Use absolute path for robustness. -->
+    <script type="text/babel" data-presets="react,typescript" src="/index.tsx"></script>
     
   </body>
 </html>

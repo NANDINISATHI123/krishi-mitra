@@ -1,6 +1,6 @@
 
 import type { Handler, HandlerEvent } from "@netlify/functions";
-import { GoogleGenAI, Type } from '@google/genai';
+import { GoogleGenAI } from '@google/genai';
 
 // This is the main handler Netlify will call for each request.
 const handler: Handler = async (event: HandlerEvent) => {

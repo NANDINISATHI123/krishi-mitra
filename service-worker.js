@@ -1,7 +1,7 @@
 // --- Service Worker for Krishi Mitra ---
 
-const CACHE_NAME = 'krishi-mitra-static-v7'; // INCREMENTED VERSION TO FORCE UPDATE
-const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v7'; // INCREMENTED VERSION
+const CACHE_NAME = 'krishi-mitra-static-v9'; // INCREMENTED VERSION TO FORCE UPDATE
+const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v9'; // INCREMENTED VERSION
 
 // App Shell: All the essential files for the app to run.
 // Using absolute paths for robustness on deployed environments.
@@ -45,9 +45,35 @@ self.addEventListener('fetch', event => {
     if (request.method !== 'GET') {
         return;
     }
+    
+    // --- FIX: Exclude Netlify functions from interception ---
+    if (url.pathname.startsWith('/.netlify/functions/')) {
+        return; // Let the browser handle this network request normally.
+    }
 
-    // --- STRATEGY 1: TSX/TS to JS rewrite for local files ---
-    // Intercept requests for '.js' files that are actually '.tsx' or '.ts' files.
+    // --- NEW: STRATEGY 1A: Fix MIME type for direct TSX/TS requests ---
+    // Handles index.tsx from index.html and any other direct .ts(x) requests.
+    if (url.origin === self.location.origin && (url.pathname.endsWith('.tsx') || url.pathname.endsWith('.ts'))) {
+        event.respondWith(
+            fetch(request).then(response => {
+                if (response.ok) {
+                    return response.text().then(code => {
+                        return new Response(code, {
+                            headers: { 'Content-Type': 'application/javascript' }
+                        });
+                    });
+                }
+                return response;
+            }).catch(err => {
+                 console.error('[SW] Fetch failed for TS(X) file, trying cache.', err);
+                 return caches.match(request);
+            })
+        );
+        return;
+    }
+
+    // --- EXISTING: STRATEGY 1B: TSX/TS to JS rewrite for module imports ---
+    // Intercepts requests for '.js' files that are actually '.tsx' or '.ts' files.
     if (url.origin === self.location.origin && url.pathname.endsWith('.js')) {
         event.respondWith(
             (async () => {
@@ -55,7 +81,6 @@ self.addEventListener('fetch', event => {
                 const tsPath = url.pathname.replace(/\.js$/, '.ts');
 
                 try {
-                    // Try fetching the .tsx version first
                     const tsxResponse = await fetch(tsxPath);
                     if (tsxResponse.ok) {
                         const code = await tsxResponse.text();
@@ -64,7 +89,6 @@ self.addEventListener('fetch', event => {
                 } catch (e) { /* Fall through */ }
                 
                 try {
-                    // If .tsx fails, try the .ts version
                     const tsResponse = await fetch(tsPath);
                     if (tsResponse.ok) {
                         const code = await tsResponse.text();
@@ -72,7 +96,6 @@ self.addEventListener('fetch', event => {
                     }
                 } catch (e) { /* Fall through */ }
 
-                // If neither .tsx nor .ts is found, try fetching the original .js from cache/network
                 const cacheResponse = await caches.match(request);
                 if (cacheResponse) return cacheResponse;
                 return fetch(request);
