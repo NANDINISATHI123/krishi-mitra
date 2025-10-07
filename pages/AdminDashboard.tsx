@@ -3,8 +3,7 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext.tsx';
 import UserManagement from '../components/admin/UserManagement.tsx';
-// FIX: Corrected the import path to point to the actual file name.
-import TutorialManagement from '../components/admin/ContentManagement.tsx';
+import ContentManagement from '../components/admin/ContentManagement.tsx';
 import SupplierManagement from '../components/admin/SupplierManagement.tsx';
 import FeedbackViewer from '../components/admin/FeedbackViewer.tsx';
 import AiDiagnosisReports from '../components/admin/DangerReports.tsx';
@@ -36,7 +35,7 @@ const AdminDashboard = () => {
             <>
                 <div style={{ display: activeTab === 'reports' ? 'block' : 'none' }}><AiDiagnosisReports /></div>
                 <div style={{ display: activeTab === 'users' ? 'block' : 'none' }}><UserManagement /></div>
-                <div style={{ display: activeTab === 'tutorials' ? 'block' : 'none' }}><TutorialManagement /></div>
+                <div style={{ display: activeTab === 'tutorials' ? 'block' : 'none' }}><ContentManagement /></div>
                 <div style={{ display: activeTab === 'suppliers' ? 'block' : 'none' }}><SupplierManagement /></div>
                 <div style={{ display: activeTab === 'calendar' ? 'block' : 'none' }}><CalendarManagement /></div>
                 <div style={{ display: activeTab === 'outcomes' ? 'block' : 'none' }}><SuccessTrackerViewer /></div>

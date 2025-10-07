@@ -1,8 +1,6 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { GoogleGenAI } from '@google/genai';
 
-// FIX: Moved API key check and AI client initialization inside the handler
-// to ensure it runs on every request and avoids top-level return statements.
 const handler: Handler = async (event: HandlerEvent) => {
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 

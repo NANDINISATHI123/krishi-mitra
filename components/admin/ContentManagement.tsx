@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { useAppContext } from '../../context/AppContext.tsx';
 import { addActionToQueue } from '../../services/offlineService.ts';
@@ -8,7 +9,7 @@ import {
 import { Tutorial } from '../../types.ts';
 import SkeletonLoader from '../SkeletonLoader.tsx';
 
-const TutorialManagement = () => {
+const ContentManagement = () => {
     const { t, isOnline, refreshPendingCount, refreshData } = useAppContext();
     const [tutorials, setTutorials] = useState<Tutorial[]>([]);
     const [loading, setLoading] = useState(true);
@@ -171,5 +172,4 @@ const TutorialFormModal = ({ t, tutorial, onSave, onClose }: {t: any, tutorial: 
     );
 };
 
-// Renaming the default export to reflect the component's new purpose.
-export default TutorialManagement;
+export default ContentManagement;
