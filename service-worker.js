@@ -8,7 +8,6 @@ const APP_SHELL_FILES = [
   './',
   'index.html',
   'manifest.json',
-  'logo.svg',
 ];
 
 

@@ -5,10 +5,10 @@
   "start_url": ".",
   "display": "standalone",
   "background_color": "#FBF9F6",
-  "theme_color": "#6B8E23",
+  "theme_color": "#4A6C4B",
   "icons": [
     {
-      "src": "logo.svg",
+      "src": "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234A6C4B'%3e%3cpath d='M21.35 11.1H12.9V1.43a.79.79 0 0 0-.8-.79h-.79a.79.79 0 0 0-.79.79v9.67H1.84a.79.79 0 0 0-.79.79v.79a.79.79 0 0 0 .79.79h8.68V22.57a.79.79 0 0 0 .79.79h.79a.79.79 0 0 0 .79-.79V13.47h8.45a.79.79 0 0 0 .79-.79v-.79a.79.79 0 0 0-.79-.79z'/%3e%3c/svg%3e",
       "sizes": "any",
       "type": "image/svg+xml"
     }
