@@ -88,12 +88,15 @@ const AdvisoryCalendar = () => {
                     ? 'text-green-500 bg-green-100 dark:bg-green-900/50' 
                     : 'text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
-                  title={pendingUpdates.has(task.id) ? t('pending_sync_status') : (statuses[task.id] ? 'Mark as not done' : 'Mark as done')}
                 >
                   {pendingUpdates.has(task.id) ? (
-                    <PendingIcon className="w-8 h-8 text-yellow-500" />
+                    <span title={t('pending_sync_status')}>
+                        <PendingIcon className="w-8 h-8 text-yellow-500" />
+                    </span>
                   ) : (
-                    <CheckCircleIcon className="w-8 h-8" />
+                    <span title={statuses[task.id] ? 'Mark as not done' : 'Mark as done'}>
+                        <CheckCircleIcon className="w-8 h-8" />
+                    </span>
                   )}
                 </button>
               </div>

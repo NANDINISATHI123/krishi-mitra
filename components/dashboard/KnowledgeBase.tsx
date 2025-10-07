@@ -144,9 +144,10 @@ const KnowledgeBase = () => {
                                 type="button"
                                 onClick={handleMicClick}
                                 className={`p-3 rounded-lg transition-colors flex-shrink-0 ${isListening ? 'bg-red-500 text-white animate-pulse' : 'bg-gray-200 dark:bg-gray-600 hover:bg-gray-300'}`}
-                                title={isListening ? t('stop_listening') : t('ask_with_voice')}
                             >
-                                <MicrophoneIcon className="w-6 h-6" />
+                                <span title={isListening ? t('stop_listening') : t('ask_with_voice')}>
+                                    <MicrophoneIcon className="w-6 h-6" />
+                                </span>
                             </button>
                          )}
                         <button type="submit" className="bg-primary text-white p-3 rounded-lg hover:bg-primary-dark"><SearchIcon className="w-6 h-6" /></button>
@@ -161,9 +162,10 @@ const KnowledgeBase = () => {
                                     <button
                                         onClick={() => speak(answer.answer)}
                                         className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-                                        title="Read answer aloud"
                                     >
-                                        <SpeakerIcon className="w-6 h-6 text-primary dark:text-primary-light" />
+                                        <span title="Read answer aloud">
+                                            <SpeakerIcon className="w-6 h-6 text-primary dark:text-primary-light" />
+                                        </span>
                                     </button>
                                 </div>
                                 <button onClick={handleBookmark} className="mb-4 text-sm flex items-center gap-1 text-blue-600 hover:underline"><BookmarkIcon className="w-4 h-4" /> {t('bookmark_for_offline')}</button>
