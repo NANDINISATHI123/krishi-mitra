@@ -71,8 +71,8 @@
 </head>
   <body>
     <div id="root"></div>
-    <!-- FIX: Change script type to "text/babel" to enable transpilation -->
-    <script type="text/babel" data-type="module" src="/index.tsx"></script>
+    <!-- FIX: Explicitly tell Babel to use React and TypeScript presets -->
+    <script type="text/babel" data-presets="react,typescript" data-type="module" src="/index.tsx"></script>
     
   </body>
 </html>
