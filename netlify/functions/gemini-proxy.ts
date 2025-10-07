@@ -1,13 +1,18 @@
 import type { Handler, HandlerEvent } from "@netlify/functions";
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Type } from '@google/genai';
 
+// This is the main handler Netlify will call for each request.
 const handler: Handler = async (event: HandlerEvent) => {
+  // CRITICAL FIX: The API key and AI client must be initialized *inside* the handler.
+  // This ensures they are set up for each invocation, which is the correct pattern
+  // for serverless functions and prevents deployment/runtime errors.
   const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
   if (!GEMINI_API_KEY) {
+    console.error("CRITICAL: GEMINI_API_KEY environment variable is not set.");
     return {
       statusCode: 500,
-      body: JSON.stringify({ error: "GEMINI_API_KEY is not defined in environment variables. Please set it in the Netlify UI." }),
+      body: JSON.stringify({ error: "Server configuration error: API key is missing." }),
     };
   }
 
@@ -23,6 +28,7 @@ const handler: Handler = async (event: HandlerEvent) => {
 
     let response;
 
+    // Route the request to the appropriate function based on the 'type' field.
     switch (type) {
       case 'getRealDiagnosis':
         response = await handleDiagnosis(ai, payload);
@@ -34,7 +40,7 @@ const handler: Handler = async (event: HandlerEvent) => {
         response = await handleKnowledge(ai, payload);
         break;
       default:
-        return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request type' }) };
+        return { statusCode: 400, body: JSON.stringify({ error: 'Invalid request type specified' }) };
     }
 
     return {
@@ -44,7 +50,7 @@ const handler: Handler = async (event: HandlerEvent) => {
     };
 
   } catch (error) {
-    console.error('Error in Gemini proxy:', error);
+    console.error('Error in Gemini proxy function:', error);
     const errorMessage = error instanceof Error ? error.message : 'An internal server error occurred';
     return {
       statusCode: 500,
@@ -52,6 +58,8 @@ const handler: Handler = async (event: HandlerEvent) => {
     };
   }
 };
+
+// --- Helper Functions for different AI tasks ---
 
 async function handleDiagnosis(ai: GoogleGenAI, payload: { image: { data: string, mimeType: string }, prompt: string, schema: any }) {
     const imagePart = { inlineData: { data: payload.image.data, mimeType: payload.image.mimeType } };
@@ -91,4 +99,5 @@ async function handleKnowledge(ai: GoogleGenAI, payload: { prompt: string, schem
     return { text: genAIResponse.text };
 }
 
+// Ensure the handler is exported correctly for Netlify.
 export { handler };
