@@ -1,7 +1,7 @@
 // --- Service Worker for Krishi Mitra ---
 
-const CACHE_NAME = 'krishi-mitra-static-v9'; // INCREMENTED VERSION TO FORCE UPDATE
-const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v9'; // INCREMENTED VERSION
+const CACHE_NAME = 'krishi-mitra-static-v10'; // INCREMENTED VERSION TO FORCE UPDATE
+const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v10'; // INCREMENTED VERSION
 
 // App Shell: All the essential files for the app to run.
 // Using absolute paths for robustness on deployed environments.
@@ -51,7 +51,7 @@ self.addEventListener('fetch', event => {
         return; // Let the browser handle this network request normally.
     }
 
-    // --- NEW: STRATEGY 1A: Fix MIME type for direct TSX/TS requests ---
+    // --- STRATEGY 1A: Fix MIME type for direct TSX/TS requests ---
     // Handles index.tsx from index.html and any other direct .ts(x) requests.
     if (url.origin === self.location.origin && (url.pathname.endsWith('.tsx') || url.pathname.endsWith('.ts'))) {
         event.respondWith(
@@ -72,34 +72,44 @@ self.addEventListener('fetch', event => {
         return;
     }
 
-    // --- EXISTING: STRATEGY 1B: TSX/TS to JS rewrite for module imports ---
-    // Intercepts requests for '.js' files that are actually '.tsx' or '.ts' files.
+    // --- IMPROVED: STRATEGY 1B: TSX/TS to JS rewrite for module imports with Caching ---
     if (url.origin === self.location.origin && url.pathname.endsWith('.js')) {
         event.respondWith(
-            (async () => {
-                const tsxPath = url.pathname.replace(/\.js$/, '.tsx');
-                const tsPath = url.pathname.replace(/\.js$/, '.ts');
+            caches.match(request).then(cachedResponse => {
+                if (cachedResponse) {
+                    return cachedResponse;
+                }
 
-                try {
-                    const tsxResponse = await fetch(tsxPath);
-                    if (tsxResponse.ok) {
-                        const code = await tsxResponse.text();
-                        return new Response(code, { headers: { 'Content-Type': 'application/javascript' } });
-                    }
-                } catch (e) { /* Fall through */ }
+                const fetchAndCache = async (path) => {
+                    try {
+                        const response = await fetch(path);
+                        if (response.ok) {
+                            const code = await response.text();
+                            const jsResponse = new Response(code, { headers: { 'Content-Type': 'application/javascript' } });
+                            
+                            const cache = await caches.open(DYNAMIC_CACHE_NAME);
+                            cache.put(request, jsResponse.clone());
+
+                            return jsResponse;
+                        }
+                    } catch (e) { /* Ignore fetch errors */ }
+                    return null;
+                };
                 
-                try {
-                    const tsResponse = await fetch(tsPath);
-                    if (tsResponse.ok) {
-                        const code = await tsResponse.text();
-                        return new Response(code, { headers: { 'Content-Type': 'application/javascript' } });
-                    }
-                } catch (e) { /* Fall through */ }
+                return (async () => {
+                    const tsxPath = url.pathname.replace(/\.js$/, '.tsx');
+                    const tsPath = url.pathname.replace(/\.js$/, '.ts');
 
-                const cacheResponse = await caches.match(request);
-                if (cacheResponse) return cacheResponse;
-                return fetch(request);
-            })()
+                    const tsxResult = await fetchAndCache(tsxPath);
+                    if (tsxResult) return tsxResult;
+
+                    const tsResult = await fetchAndCache(tsPath);
+                    if (tsResult) return tsResult;
+                    
+                    // Fallback for real .js files (e.g., from importmap)
+                    return fetch(request);
+                })();
+            })
         );
         return;
     }

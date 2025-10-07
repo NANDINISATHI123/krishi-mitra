@@ -116,12 +116,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
-    <!-- FIX: Replaced direct script load with a loader script to wait for the service worker.
-         This solves the race condition on initial load where the browser might request
-         index.tsx before the service worker is active to handle the MIME type. -->
+    <!-- FIX: Replaced complex loader with a robust script that waits for the service worker to be ready. -->
     <script>
       function loadApp() {
-        console.log('[SW Loader] Service worker is active, loading app script.');
+        console.log('[SW Loader] Conditions met, loading app script.');
         const script = document.createElement('script');
         script.type = 'text/babel';
         script.setAttribute('data-presets', 'react,typescript');
@@ -129,17 +127,19 @@
         document.body.appendChild(script);
       }
 
-      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-        // SW is already in control, load immediately.
-        loadApp();
-      } else if (navigator.serviceWorker) {
-        // Wait for the new SW to take control.
-        console.log('[SW Loader] Waiting for service worker controller...');
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
+      // Use navigator.serviceWorker.ready, which is a promise that resolves
+      // when the service worker is active. This is the most reliable way
+      // to ensure it's ready to intercept requests.
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then((registration) => {
+          console.log('[SW Loader] Service worker is ready.', registration);
+          loadApp();
+        }).catch(error => {
+          console.error('[SW Loader] Service worker failed to become ready, loading app directly as fallback.', error);
           loadApp();
         });
       } else {
-        // Service workers not supported, load directly as a fallback.
+        // Service workers not supported, load directly.
         console.warn('[SW Loader] Service workers not supported. Loading app script directly.');
         loadApp();
       }
