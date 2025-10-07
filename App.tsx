@@ -34,28 +34,34 @@ const Router = () => {
 
     useEffect(() => {
         const handleHashChange = () => {
+            console.log(`[DEBUG] Router: Hash changed from ${hash} to ${window.location.hash}`);
             setHash(window.location.hash);
         };
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
-    }, []);
+    }, [hash]);
 
     const path = hash.substring(1);
+    console.log(`[DEBUG] Router: Rendering for path: "${path}"`);
 
     // While initial authentication is happening, render nothing from React.
     // This allows the static App Shell in index.html to remain visible,
     // providing a seamless loading experience without a flash of content.
     if (authLoading) {
+        console.log("[DEBUG] Router: Auth is loading. Rendering null.");
         return null;
     }
 
     // --- Authenticated User Flow ---
     if (user) {
+        console.log("[DEBUG] Router: User is authenticated.");
         // If profile is still loading, show a specific dashboard loader
         if (profileLoading || !profile) {
+            console.log("[DEBUG] Router: Profile is loading. Showing DashboardLoader.");
             return <DashboardLoader />;
         }
         
+        console.log(`[DEBUG] Router: User role is "${profile.role}".`);
         // Render the correct dashboard based on user role
         if (profile.role === 'admin') {
             return <Suspense fallback={<DashboardLoader />}><AdminDashboard /></Suspense>;
@@ -65,21 +71,26 @@ const Router = () => {
         }
     }
 
+    console.log("[DEBUG] Router: User is not authenticated. Checking public routes.");
     // --- Unauthenticated User Flow ---
     if (path === 'login') {
+        console.log("[DEBUG] Router: Rendering LoginPage.");
         return <Suspense fallback={<AuthPageLoader />}><LoginPage /></Suspense>;
     }
     if (path === 'register') {
+        console.log("[DEBUG] Router: Rendering RegisterPage.");
         return <Suspense fallback={<AuthPageLoader />}><RegisterPage /></Suspense>;
     }
     
     // If an unauthenticated user tries to access a dashboard path, redirect them
     if (path.startsWith('dashboard/')) {
+        console.log("[DEBUG] Router: Unauthorized dashboard access. Redirecting to #login.");
         window.location.hash = 'login';
         return null;
     }
 
     // Default to the homepage for all other cases
+    console.log("[DEBUG] Router: No specific route matched. Rendering HomePage.");
     return <HomePage />;
 };
 
