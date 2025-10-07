@@ -1,5 +1,4 @@
 
-
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { GoogleGenAI } from '@google/genai';
 

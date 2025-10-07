@@ -13,34 +13,94 @@
     <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/react-image-crop@11.0.5/dist/ReactCrop.css">
     
-    <!-- FIX: Add Babel Standalone for in-browser TSX/JSX transpilation -->
     <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 
-    <!-- FIX: App Shell Loader Styles -->
+    <!-- High-Fidelity App Shell Styles -->
     <style>
+      /* Base variables matching tailwind config for the shell */
+      :root {
+        --color-primary: #4A6C4B;
+        --color-primary-dark: #385239;
+        --color-bg-light: #F8F9FA;
+        --color-bg-dark: #181A1B;
+        --color-text-light: #212529;
+        --color-text-dark: #E9ECEF;
+      }
+      
+      .app-shell-body {
+        font-family: 'PT Sans', sans-serif;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: var(--color-bg-light);
+        color: var(--color-text-light);
+      }
+      
+      .app-shell-header {
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        background-color: rgba(248, 249, 250, 0.8);
+        -webkit-backdrop-filter: blur(4px);
+        backdrop-filter: blur(4px);
+      }
+      
+      .app-shell-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0.75rem 1rem;
+        display: flex;
+        align-items: center;
+      }
+      
+      .app-shell-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--color-primary);
+        font-family: 'PT Sans', sans-serif;
+      }
+
+      .app-shell-main {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+      
       @keyframes spin {
-        from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
       }
-      .app-shell-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        width: 100vw;
-        background-color: #F8F9FA;
+      .app-shell-spinner {
+        width: 2rem;
+        height: 2rem;
+        animation: spin 1s linear infinite;
+        color: var(--color-primary);
       }
-      .app-shell-loader {
-        width: 64px;
-        height: 64px;
-        animation: spin 1.5s linear infinite;
-        color: #4A6C4B; /* primary color */
+
+      .app-shell-footer {
+        background-color: var(--color-primary-dark);
+        color: white;
+        padding: 1rem;
+        text-align: center;
+      }
+      
+      /* Dark mode for shell */
+      @media (prefers-color-scheme: dark) {
+        .app-shell-body {
+          background-color: var(--color-bg-dark);
+          color: var(--color-text-dark);
+        }
+        .app-shell-header {
+           background-color: rgba(24, 26, 27, 0.8);
+        }
+        .app-shell-title {
+            color: #6B8E6B; /* primary-light */
+        }
       }
     </style>
-    <!-- END FIX -->
+    <!-- END App Shell -->
     
     <script>
-      // --- FIX: Register Service Worker as early as possible ---
+      // Register Service Worker as early as possible
       if ('serviceWorker' in navigator) {
           navigator.serviceWorker.register('/service-worker.js')
               .then(registration => {
@@ -50,18 +110,6 @@
                   console.log('ServiceWorker registration failed: ', error);
               });
       }
-      // --- END FIX ---
-
-      // --- DEBUG SCRIPT ---
-      document.addEventListener('DOMContentLoaded', () => {
-        console.log('--- Krishi Mitra Debug Paths ---');
-        const iconLink = document.querySelector('link[rel="icon"]');
-        const manifestLink = document.querySelector('link[rel="manifest"]');
-        console.log('Icon Href Resolved To:', iconLink ? iconLink.href : 'Not Found in DOM');
-        console.log('Manifest Href Resolved To:', manifestLink ? manifestLink.href : 'Not Found in DOM');
-        console.log('------------------------------');
-      });
-      // --- END DEBUG SCRIPT ---
 
       tailwind.config = {
         darkMode: 'class',
@@ -103,20 +151,37 @@
 </script>
 </head>
   <body>
-    <!-- FIX: App Shell Loader Markup -->
+    <!-- High-Fidelity App Shell Markup: Replaced by React once it loads -->
     <div id="root">
-      <div class="app-shell-container">
-        <svg class="app-shell-loader" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21.35,11.1H12.9V1.43a.79.79,0,0,0-.8-.79H11.31a.79.79,0,0,0-.79.79v9.67H1.84a.79.79,0,0,0-.79.79v.79a.79.79,0,0,0,.79.79h8.68V22.57a.79.79,0,0,0,.79.79h.79a.79.79,0,0,0,.79-.79V13.47h8.45a.79.79,0,0,0,.79-.79v-.79A.79.79,0,0,0,21.35,11.1Z" />
-        </svg>
+      <div class="app-shell-body">
+          <header class="app-shell-header">
+              <div class="app-shell-container">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <svg style="height: 2.5rem; width: 2.5rem; color: var(--color-primary);" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21.35,11.1H12.9V1.43a.79.79,0,0,0-.8-.79H11.31a.79.79,0,0,0-.79.79v9.67H1.84a.79.79,0,0,0-.79.79v.79a.79.79,0,0,0,.79.79h8.68V22.57a.79.79,0,0,0,.79.79h.79a.79.79,0,0,0,.79-.79V13.47h8.45a.79.79,0,0,0,.79-.79v-.79A.79.79,0,0,0,21.35,11.1Z" />
+                      </svg>
+                      <span class="app-shell-title">Krishi Mitra</span>
+                  </div>
+              </div>
+          </header>
+          <main class="app-shell-main">
+               <svg class="app-shell-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 9a9 9 0 0114.48-5.23M20 15a9 9 0 01-14.48 5.23" />
+              </svg>
+              <p style="margin-top: 0.5rem; font-size: 0.875rem;">Loading Application...</p>
+          </main>
+          <footer class="app-shell-footer">
+              <p>© 2024 Krishi Mitra. Empowering Farmers with AI.</p>
+          </footer>
       </div>
     </div>
     
-    <!-- FIX: Defer non-critical scripts to prevent render-blocking -->
+    <!-- Defer non-critical scripts to prevent render-blocking -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
-    <!-- FIX: Replaced complex loader with a robust script that waits for the service worker to be ready. -->
+    <!-- Robust script that waits for the service worker to be ready before loading the app. -->
     <script>
       function loadApp() {
         console.log('[SW Loader] Conditions met, loading app script.');

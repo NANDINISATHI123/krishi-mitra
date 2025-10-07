@@ -3,15 +3,16 @@ import { AppContextProvider, useAppContext } from './context/AppContext.js';
 import Header from './components/Header.js';
 import Footer from './components/Footer.js';
 import HomePage from './pages/HomePage.js';
-import LoginPage from './pages/LoginPage.js';
-import RegisterPage from './pages/RegisterPage.js';
 import { CheckCircleIcon, CloseIcon, LogoIcon } from './components/Icons.js';
 
 // Lazy load dashboard components to enable code-splitting.
-// This prevents them from being loaded until a user is logged in,
-// fixing the "white screen" issue on the public homepage.
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard.js'));
 const EmployeeDashboard = lazy(() => import('./pages/EmployeeDashboard.js'));
+
+// Lazy load authentication pages for faster initial load.
+const LoginPage = lazy(() => import('./pages/LoginPage.js'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage.js'));
+
 
 const DashboardLoader = () => (
     <div className="flex flex-col justify-center items-center h-[calc(100vh-200px)]">
@@ -20,6 +21,11 @@ const DashboardLoader = () => (
     </div>
 );
 
+const AuthPageLoader = () => (
+    <div className="flex justify-center items-center min-h-screen">
+        <LogoIcon className="h-20 w-20 text-primary animate-pulse" />
+    </div>
+);
 
 const Router = () => {
     const { profile, user, profileLoading, authLoading } = useAppContext();
@@ -35,48 +41,47 @@ const Router = () => {
 
     const path = hash.substring(1);
 
-    // Show a loading indicator while the app is checking the user's session.
+    // While initial authentication is happening, render nothing from React.
+    // This allows the static App Shell in index.html to remain visible,
+    // providing a seamless loading experience without a flash of content.
     if (authLoading) {
-        return (
-            <div className="flex flex-col justify-center items-center h-[calc(100vh-200px)]">
-                <LogoIcon className="h-20 w-20 text-primary animate-pulse" />
-                <p className="mt-4 text-lg font-semibold">Authenticating...</p>
-            </div>
-        );
+        return null;
     }
-    
-    // If the user is authenticated but we are still fetching their profile, show a loading screen.
-    if (user && profileLoading) {
-        return (
-            <div className="flex flex-col justify-center items-center h-[calc(100vh-200px)]">
-                <LogoIcon className="h-20 w-20 text-primary animate-pulse" />
-                <p className="mt-4 text-lg font-semibold">Loading your dashboard...</p>
-            </div>
-        );
-    }
-    
-    if (profile) {
-        const adminPath = 'dashboard/admin';
-        const employeePath = 'dashboard/employee';
 
-        if (profile.role === 'admin' && (path === adminPath || path === '')) {
+    // --- Authenticated User Flow ---
+    if (user) {
+        // If profile is still loading, show a specific dashboard loader
+        if (profileLoading || !profile) {
+            return <DashboardLoader />;
+        }
+        
+        // Render the correct dashboard based on user role
+        if (profile.role === 'admin') {
             return <Suspense fallback={<DashboardLoader />}><AdminDashboard /></Suspense>;
         }
-        if (profile.role === 'employee' && (path === employeePath || path === '')) {
-             return <Suspense fallback={<DashboardLoader />}><EmployeeDashboard /></Suspense>;
-        }
-         // If a logged-in user tries to access login/register or another dashboard, redirect them.
-        if (path === 'login' || path === 'register' || (profile.role === 'admin' && path === employeePath) || (profile.role === 'employee' && path === adminPath)) {
-             window.location.hash = profile.role === 'admin' ? adminPath : employeePath;
-             return null;
+        if (profile.role === 'employee') {
+            return <Suspense fallback={<DashboardLoader />}><EmployeeDashboard /></Suspense>;
         }
     }
+
+    // --- Unauthenticated User Flow ---
+    if (path === 'login') {
+        return <Suspense fallback={<AuthPageLoader />}><LoginPage /></Suspense>;
+    }
+    if (path === 'register') {
+        return <Suspense fallback={<AuthPageLoader />}><RegisterPage /></Suspense>;
+    }
     
-    if (path === 'login') return <LoginPage />;
-    if (path === 'register') return <RegisterPage />;
-    
+    // If an unauthenticated user tries to access a dashboard path, redirect them
+    if (path.startsWith('dashboard/')) {
+        window.location.hash = 'login';
+        return null;
+    }
+
+    // Default to the homepage for all other cases
     return <HomePage />;
-}
+};
+
 
 const OfflineBanner = () => {
     const { isOnline, t, pendingActionCount } = useAppContext();
