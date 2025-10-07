@@ -8,7 +8,7 @@ interface FeedbackModalProps {
 }
 
 const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose }) => {
-    const { t, profile } = useAppContext();
+    const { t, profile, showToast } = useAppContext();
     const [message, setMessage] = useState('');
     const [submitted, setSubmitted] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -16,7 +16,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose }) => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!message.trim() || !profile) {
-            alert("Please enter a message and be logged in.");
+            showToast(t('error_generic'), 'error');
             return;
         }
         setLoading(true);
@@ -24,7 +24,8 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ onClose }) => {
         if (result) {
             setSubmitted(true);
         } else {
-            alert("Failed to submit feedback. Please try again.");
+            showToast(t('error_feedback_failed'), 'error');
+            onClose();
         }
         setLoading(false);
     };

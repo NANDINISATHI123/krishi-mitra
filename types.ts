@@ -1,6 +1,13 @@
+
 export type Language = 'en' | 'te';
 export type Theme = 'light' | 'dark';
 export type FontSize = 'sm' | 'base' | 'lg';
+
+export interface ToastMessage {
+  id: number;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
 
 export interface DbRecord {
     id: string;

@@ -7,7 +7,7 @@ import { CheckCircleIcon, PendingIcon } from '../Icons.js';
 import SkeletonLoader from '../SkeletonLoader.js';
 
 const AdvisoryCalendar = () => {
-  const { t, user, language, isOnline, refreshData, refreshPendingCount } = useAppContext();
+  const { t, user, language, isOnline, refreshData, refreshPendingCount, showToast } = useAppContext();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [tasks, setTasks] = useState<CalendarTask[]>([]);
   const [statuses, setStatuses] = useState<{ [taskId: string]: boolean }>({});
@@ -41,15 +41,15 @@ const AdvisoryCalendar = () => {
     const currentStatus = statuses[taskId] || false;
     const newStatus = !currentStatus;
     
+    // Optimistic UI update
     setStatuses(prev => ({ ...prev, [taskId]: newStatus }));
 
     if (isOnline) {
-      try {
-        await updateTaskStatus(user.id, taskId, newStatus);
-      } catch (error) {
+      const result = await updateTaskStatus(user.id, taskId, newStatus);
+      if (!result) {
         // Revert UI on error
         setStatuses(prev => ({ ...prev, [taskId]: currentStatus }));
-        alert("Failed to update status. Please try again.");
+        showToast(t('error_update_failed'), 'error');
       }
     } else {
       setPendingUpdates(prev => new Set(prev).add(taskId));

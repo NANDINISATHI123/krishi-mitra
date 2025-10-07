@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabaseClient.js';
 import { LogoIcon, SunIcon, MoonIcon, MenuIcon, CloseIcon, LogoutIcon } from './Icons.js';
 
 const Header = () => {
-  const { theme, toggleTheme, language, setLanguage, t, profile, isSidebarOpen, setIsSidebarOpen } = useAppContext();
+  const { theme, toggleTheme, language, setLanguage, t, profile, isSidebarOpen, setIsSidebarOpen, showToast } = useAppContext();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
@@ -18,6 +18,7 @@ const Header = () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
       console.error('Error logging out:', error.message);
+      showToast(t('error_generic'), 'error');
     }
     // Auth listener in context will handle state change
     window.location.hash = '';

@@ -7,7 +7,7 @@ import SkeletonLoader from '../SkeletonLoader.js';
 import { PendingIcon } from '../Icons.js';
 
 const SuccessTracker = () => {
-    const { t, user, isOnline, refreshData, refreshPendingCount } = useAppContext();
+    const { t, user, isOnline, refreshData, refreshPendingCount, showToast } = useAppContext();
     const [outcomes, setOutcomes] = useState<Outcome[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
@@ -59,15 +59,20 @@ const SuccessTracker = () => {
         setNotes('');
         
         if (isOnline) {
-            await addOutcome(newOutcomeData);
-            fetchData(); // Refresh to get real data
+            const result = await addOutcome(newOutcomeData);
+            if (result) {
+                showToast(t('success_generic'), 'success');
+            } else {
+                showToast(t('error_save_failed'), 'error');
+            }
+            fetchData(); // Refresh to get real data and remove optimistic one
         } else {
             await addActionToQueue({
                 service: 'tracker',
                 method: 'addOutcome',
                 payload: newOutcomeData
             });
-            refreshPendingCount(); // Instantly update the pending count in the header
+            refreshPendingCount();
         }
     };
 

@@ -8,7 +8,7 @@ import { Tutorial } from '../../types.js';
 import SkeletonLoader from '../SkeletonLoader.js';
 
 const ContentManagement = () => {
-    const { t, isOnline, refreshPendingCount, refreshData } = useAppContext();
+    const { t, isOnline, refreshPendingCount, refreshData, showToast } = useAppContext();
     const [tutorials, setTutorials] = useState<Tutorial[]>([]);
     const [loading, setLoading] = useState(true);
     
@@ -51,14 +51,14 @@ const ContentManagement = () => {
         setTutorialModalOpen(false);
         
         if (isOnline) {
-            try {
-                const payload = isEditing ? tutorialData : (({ id, created_at, ...d }) => d)(tutorialData);
-                isEditing ? await updateTutorial(payload as Tutorial) : await saveTutorial(payload);
-                loadData(); // Refresh from server
-            } catch (e) {
-                alert("Failed to save tutorial.");
-                loadData(); // Revert on error
+            const payload = isEditing ? tutorialData : (({ id, created_at, ...d }) => d)(tutorialData);
+            const result = isEditing ? await updateTutorial(payload as Tutorial) : await saveTutorial(payload);
+            if(result) {
+                showToast(t('success_generic'), 'success');
+            } else {
+                showToast(t('error_save_failed'), 'error');
             }
+            loadData(); // Refresh from server
         } else {
             const action = {
                 service: 'content' as const,
@@ -78,8 +78,10 @@ const ContentManagement = () => {
 
         if (isOnline) {
             const success = await deleteTutorial(tutorialId);
-            if(!success) {
-                alert("Failed to delete tutorial.");
+            if(success) {
+                showToast(t('success_generic'), 'success');
+            } else {
+                showToast(t('error_delete_failed'), 'error');
                 setTutorials(originalTutorials);
             }
         } else {

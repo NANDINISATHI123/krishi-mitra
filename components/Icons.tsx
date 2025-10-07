@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 
 // Base props for all icons
@@ -127,4 +128,8 @@ export const DownloadIcon: React.FC<IconProps> = ({ className }) => (
 
 export const ArrowLeftIcon: React.FC<IconProps> = ({ className }) => (
     <Icon className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></Icon>
+);
+
+export const ErrorIcon: React.FC<IconProps> = ({ className }) => (
+    <Icon className={className}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></Icon>
 );

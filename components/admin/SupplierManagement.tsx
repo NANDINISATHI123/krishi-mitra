@@ -8,7 +8,7 @@ import { Supplier } from '../../types.js';
 import SkeletonLoader from '../SkeletonLoader.js';
 
 const SupplierManagement = () => {
-    const { t, isOnline, refreshPendingCount, refreshData } = useAppContext();
+    const { t, isOnline, refreshPendingCount, refreshData, showToast } = useAppContext();
     const [suppliers, setSuppliers] = useState<Supplier[]>([]);
     const [loading, setLoading] = useState(true);
     
@@ -49,14 +49,14 @@ const SupplierManagement = () => {
         setSupplierModalOpen(false);
         
         if(isOnline) {
-            try {
-                const payload = isEditing ? supplierData : (({ id, created_at, ...d }) => d)(supplierData);
-                isEditing ? await updateSupplier(payload as Supplier) : await saveSupplier(payload);
-                loadData();
-            } catch(e) {
-                alert("Failed to save supplier.");
-                loadData();
+            const payload = isEditing ? supplierData : (({ id, created_at, ...d }) => d)(supplierData);
+            const result = isEditing ? await updateSupplier(payload as Supplier) : await saveSupplier(payload);
+            if(result) {
+                showToast(t('success_generic'), 'success');
+            } else {
+                showToast(t('error_save_failed'), 'error');
             }
+            loadData();
         } else {
             const action = {
                 service: 'content' as const,
@@ -76,8 +76,10 @@ const SupplierManagement = () => {
         
         if (isOnline) {
             const success = await deleteSupplier(supplierId);
-            if (!success) {
-                 alert("Failed to delete supplier.");
+            if (success) {
+                showToast(t('success_generic'), 'success');
+            } else {
+                 showToast(t('error_delete_failed'), 'error');
                  setSuppliers(originalSuppliers);
             }
         } else {

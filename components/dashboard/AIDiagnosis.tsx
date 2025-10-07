@@ -92,7 +92,7 @@ const ImageCropper = ({ src, onCropComplete, onCancel }: { src: string; onCropCo
 type DiagnosisResult = Omit<Report, 'id' | 'user_id' | 'user_email' | 'created_at' | 'photo_url'> & { photo: string };
 
 const AIDiagnosis = () => {
-    const { t, user, profile, isOnline, refreshPendingCount } = useAppContext();
+    const { t, user, profile, isOnline, refreshPendingCount, showToast } = useAppContext();
     
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -100,7 +100,6 @@ const AIDiagnosis = () => {
 
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<DiagnosisResult | null>(null);
-    const [error, setError] = useState('');
     
     const [history, setHistory] = useState<Report[]>([]);
     const [historyLoading, setHistoryLoading] = useState(true);
@@ -126,7 +125,6 @@ const AIDiagnosis = () => {
         setImagePreview(null);
         setUncroppedImage(null);
         setResult(null);
-        setError('');
         setLoading(false);
         setSelectedReport(null);
         if (fileInputRef.current) {
@@ -155,7 +153,6 @@ const AIDiagnosis = () => {
     const handleDiagnose = async () => {
         if (!imageFile || !user || !profile) return;
         setLoading(true);
-        setError('');
         setResult(null);
         setSelectedReport(null);
 
@@ -164,12 +161,12 @@ const AIDiagnosis = () => {
                 const diagnosisResult = await getRealDiagnosis(imageFile);
 
                 if (!diagnosisResult.is_plant) {
-                    setError(t('error_not_a_plant'));
+                    showToast(t('error_not_a_plant'), 'error');
                     setLoading(false);
                     return;
                 }
                 if (!diagnosisResult.is_identifiable) {
-                    setError(t('error_unclear_image'));
+                    showToast(t('error_unclear_image'), 'error');
                     setLoading(false);
                     return;
                 }
@@ -183,26 +180,25 @@ const AIDiagnosis = () => {
                     similar_cases: diagnosisResult.similar_cases,
                 });
                 
-                try {
-                    const reportData = {
-                        user_id: user.id,
-                        user_email: profile.email,
-                        disease: diagnosisResult.disease,
-                        confidence: diagnosisResult.confidence,
-                        treatment: diagnosisResult.treatment,
-                        ai_explanation: diagnosisResult.ai_explanation,
-                        similar_cases: diagnosisResult.similar_cases,
-                    };
-                    await addReport(reportData, imageFile);
+                const reportData = {
+                    user_id: user.id,
+                    user_email: profile.email,
+                    disease: diagnosisResult.disease,
+                    confidence: diagnosisResult.confidence,
+                    treatment: diagnosisResult.treatment,
+                    ai_explanation: diagnosisResult.ai_explanation,
+                    similar_cases: diagnosisResult.similar_cases,
+                };
+                const reportSaved = await addReport(reportData, imageFile);
+                if (!reportSaved) {
+                    showToast(t('error_saving_report'), 'error');
+                } else {
                     fetchHistory();
-                } catch (saveError) {
-                    console.error("Failed to save report:", saveError);
-                    setError(t('error_saving_report'));
                 }
 
             } catch (err) {
                 console.error("Diagnosis failed:", err);
-                setError(t('error_diagnosis_failed'));
+                showToast(t('error_diagnosis_failed'), 'error');
             }
         } else {
             const reportData = { user_id: user.id, user_email: profile.email };
@@ -215,7 +211,7 @@ const AIDiagnosis = () => {
                 file: serializableFile
             });
             refreshPendingCount();
-            setError(t('diagnosis_queued'));
+            showToast(t('diagnosis_queued'), 'info');
             resetState();
         }
         setLoading(false);
@@ -332,7 +328,6 @@ const AIDiagnosis = () => {
                                 {loading ? 'Analyzing...' : t('diagnose')}
                                 {!loading && <ArrowRightIcon />}
                             </button>
-                             {error && <p className="mt-4 text-center text-base text-red-500 bg-red-100 dark:bg-red-900/50 p-3 rounded-md">{error}</p>}
                         </div>
                     </div>
 

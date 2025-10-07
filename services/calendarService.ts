@@ -42,17 +42,19 @@ export const getUserTaskStatuses = async (userId: string): Promise<UserTaskStatu
 };
 
 export const updateTaskStatus = async (userId: string, taskId: string, isDone: boolean): Promise<UserTaskStatus | null> => {
-    const { data, error } = await supabase
-        .from('user_task_status')
-        .upsert({ user_id: userId, task_id: taskId, is_done: isDone }, { onConflict: 'user_id, task_id' })
-        .select()
-        .single();
-    
-    if (error) {
-        console.error('Error updating task status:', error.message);
-        throw error;
+    try {
+        const { data, error } = await supabase
+            .from('user_task_status')
+            .upsert({ user_id: userId, task_id: taskId, is_done: isDone }, { onConflict: 'user_id, task_id' })
+            .select()
+            .single();
+        
+        if (error) throw error;
+        return data;
+    } catch (error) {
+        console.error('Error updating task status:', error);
+        return null;
     }
-    return data;
 };
 
 // --- For Admins ---

@@ -19,37 +19,42 @@ export const getPosts = async (): Promise<CommunityPost[]> => {
 };
 
 export const addPost = async (content: string, userId: string, imageFile?: File | null): Promise<CommunityPost | null> => {
-    let photo_url: string | undefined = undefined;
+    try {
+        let photo_url: string | undefined = undefined;
 
-    if (imageFile) {
-        const fileExt = imageFile.name.split('.').pop();
-        const fileName = `${Date.now()}.${fileExt}`;
-        const filePath = `posts/${userId}/${fileName}`;
+        if (imageFile) {
+            const fileExt = imageFile.name.split('.').pop();
+            const fileName = `${Date.now()}.${fileExt}`;
+            const filePath = `posts/${userId}/${fileName}`;
 
-        const { error: uploadError } = await supabase.storage
-            .from('community-images')
-            .upload(filePath, imageFile);
+            const { error: uploadError } = await supabase.storage
+                .from('community-images')
+                .upload(filePath, imageFile);
 
-        if (uploadError) throw uploadError;
+            if (uploadError) throw uploadError;
 
-        const { data: urlData } = supabase.storage
-            .from('community-images')
-            .getPublicUrl(filePath);
-        photo_url = urlData.publicUrl;
+            const { data: urlData } = supabase.storage
+                .from('community-images')
+                .getPublicUrl(filePath);
+            photo_url = urlData.publicUrl;
+        }
+
+        const { data, error } = await supabase
+            .from('posts')
+            .insert({ content, user_id: userId, photo_url })
+            .select(`
+                *,
+                profiles (name)
+            `)
+            .single();
+        
+        if (error) throw error;
+
+        return data as any;
+    } catch (error) {
+        console.error('Error adding post:', error);
+        return null;
     }
-
-    const { data, error } = await supabase
-        .from('posts')
-        .insert({ content, user_id: userId, photo_url })
-        .select(`
-            *,
-            profiles (name)
-        `)
-        .single();
-    
-    if (error) throw error;
-
-    return data as any;
 };
 
 // --- Feedback ---

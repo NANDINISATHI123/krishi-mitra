@@ -9,6 +9,10 @@ import {
     saveSupplier, updateSupplier, deleteSupplier 
 } from './contentService.js';
 import { getRealDiagnosis } from './geminiService.js';
+import { translations } from '../lib/translations.js';
+
+type TranslationFunction = (key: keyof typeof translations['en']) => string;
+type ShowToastFunction = (message: string, type?: 'success' | 'error' | 'info') => void;
 
 const DB_NAME = 'krishi-mitra-offline';
 const DB_VERSION = 2; // Incremented to add knowledge cache
@@ -54,19 +58,13 @@ export const getQueuedActions = async (): Promise<OfflineAction[]> => {
     });
 };
 
-export const clearActionQueue = async (): Promise<void> => {
-    const db = await openDB();
-    const tx = db.transaction(ACTION_QUEUE_STORE, 'readwrite');
-    const store = tx.objectStore(ACTION_QUEUE_STORE);
-    store.clear();
-};
-
-export const processActionQueue = async (): Promise<boolean> => {
+export const processActionQueue = async (showToast: ShowToastFunction, t: TranslationFunction): Promise<{ success: boolean; }> => {
     const actions = await getQueuedActions();
-    if (actions.length === 0) return false;
+    if (actions.length === 0) return { success: false };
 
     console.log(`Processing ${actions.length} queued actions...`);
-    let success = true;
+    let hasFailures = false;
+    const successfulTimestamps: number[] = [];
 
     for (const action of actions) {
         try {
@@ -86,6 +84,7 @@ export const processActionQueue = async (): Promise<boolean> => {
                             await addReport(reportData, action.file.blob as File);
                         } else {
                             console.warn("Offline diagnosis failed for a queued item:", diagnosisResult);
+                            throw new Error("Diagnosis of queued item failed.");
                         }
                     }
                     break;
@@ -121,20 +120,32 @@ export const processActionQueue = async (): Promise<boolean> => {
                     }
                     break;
             }
+            successfulTimestamps.push(action.timestamp);
         } catch (error) {
             console.error(`Failed to process action for service '${action.service}':`, error);
-            success = false;
+            hasFailures = true;
         }
     }
 
-    if (success) {
-        await clearActionQueue();
-        console.log("Action queue cleared.");
-        return true;
+    if (successfulTimestamps.length > 0) {
+        const db = await openDB();
+        const tx = db.transaction(ACTION_QUEUE_STORE, 'readwrite');
+        const store = tx.objectStore(ACTION_QUEUE_STORE);
+        await Promise.all(successfulTimestamps.map(ts => 
+            new Promise<void>(resolve => {
+                const req = store.delete(ts);
+                req.onsuccess = () => resolve();
+                req.onerror = () => resolve(); // Don't let a delete error stop everything
+            })
+        ));
+    }
+
+    if (hasFailures) {
+        showToast(t('error_offline_action_failed'), 'error');
     }
     
-    console.warn("Some actions failed to process. They will remain in the queue.");
-    return false;
+    // 'success' means at least one action was processed and we should refresh data.
+    return { success: successfulTimestamps.length > 0 };
 };
 
 // --- Generic Content Caching ---

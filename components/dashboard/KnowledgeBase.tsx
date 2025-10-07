@@ -8,11 +8,10 @@ import { SearchIcon, BookmarkIcon, PendingIcon, SpeakerIcon, MicrophoneIcon } fr
 import SkeletonLoader from '../SkeletonLoader.js';
 
 const KnowledgeBase = () => {
-    const { t, user, language, isOnline, refreshData, refreshPendingCount } = useAppContext();
+    const { t, user, language, isOnline, refreshData, refreshPendingCount, showToast } = useAppContext();
     const [query, setQuery] = useState('');
     const [answer, setAnswer] = useState<KnowledgeAnswer | null>(null);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
     const [history, setHistory] = useState<QuestionHistory[]>([]);
     const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
@@ -35,41 +34,36 @@ const KnowledgeBase = () => {
         if (!searchQuery.trim() || !user) return;
         setLoading(true);
         setAnswer(null);
-        setError('');
         setQuery(searchQuery);
 
         if (isOnline) {
             try {
                 const result = await getKnowledgeAnswer(searchQuery, language);
                 setAnswer(result);
-                // Add to IndexedDB cache for offline use
                 await cacheKnowledgeAnswer(result);
                 await addHistory(user.id, searchQuery);
-                fetchData(); // Refresh history
+                fetchData();
             } catch (e) {
                 console.error("Knowledge base search failed:", e);
-                setError("Failed to get an answer. Please try again.");
+                showToast(t('error_generic'), 'error');
             }
         } else {
-            // Offline mode: Check IndexedDB cache
             const cachedAnswer = await getCachedKnowledgeAnswer(searchQuery);
             if (cachedAnswer) {
                 setAnswer(cachedAnswer);
             } else {
-                setError(t('knowledge_base_offline_no_cache'));
+                showToast(t('knowledge_base_offline_no_cache'), 'info');
             }
         }
         setLoading(false);
-    }, [user, language, isOnline, fetchData, t]);
+    }, [user, language, isOnline, fetchData, t, showToast]);
 
-    // Effect to update the input field as the user speaks.
     useEffect(() => {
         if (transcript) {
             setQuery(transcript);
         }
     }, [transcript]);
 
-    // Effect to trigger search automatically when listening stops.
     useEffect(() => {
         if (listeningRef.current && !isListening && transcript) {
             handleSearch(transcript);
@@ -81,11 +75,9 @@ const KnowledgeBase = () => {
         if (isListening) {
             stopListening();
         } else {
-            // Defensive check to prevent calling start if already listening
             if (!listeningRef.current) {
                 setQuery('');
                 setAnswer(null);
-                setError('');
                 startListening();
             }
         }
@@ -103,25 +95,27 @@ const KnowledgeBase = () => {
         };
         setBookmarks(prev => [optimisticBookmark, ...prev.filter(b => b.question !== answer.question)]);
         
-        try {
-            if (isOnline) {
-                await addBookmark(user.id, answer.question, answer.answer);
-                fetchData();
-            } else {
-                await addActionToQueue({
-                    service: 'knowledge',
-                    method: 'addBookmark',
-                    payload: { userId: user.id, question: answer.question, answer: answer.answer }
-                });
-                refreshPendingCount(); // Instantly update the pending count in the header
-            }
-             // Also cache for offline access
+        let success = false;
+        if (isOnline) {
+            const result = await addBookmark(user.id, answer.question, answer.answer);
+            if (result) success = true;
+        } else {
+            await addActionToQueue({
+                service: 'knowledge',
+                method: 'addBookmark',
+                payload: { userId: user.id, question: answer.question, answer: answer.answer }
+            });
+            refreshPendingCount();
+            success = true; // Offline is optimistically successful
+        }
+         
+        if (success) {
             await cacheKnowledgeAnswer(answer);
-            alert('Bookmarked and saved for offline access!');
-        } catch(e) {
-            alert('Failed to bookmark.');
-            // Revert optimistic update
-            setBookmarks(prev => prev.filter(b => b.id !== optimisticBookmark.id));
+            showToast(t('success_generic'), 'success');
+            if (isOnline) fetchData();
+        } else {
+            showToast(t('error_save_failed'), 'error');
+            setBookmarks(prev => prev.filter(b => b.id !== optimisticBookmark.id)); // Revert on online failure
         }
     }
 
@@ -153,7 +147,6 @@ const KnowledgeBase = () => {
                     </form>
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md min-h-[400px]">
                         {loading && <SkeletonLoader className="h-64" />}
-                        {error && <p className="text-center text-red-500 py-16">{error}</p>}
                         {answer && (
                             <div>
                                 <div className="flex justify-between items-start mb-2">
@@ -179,7 +172,7 @@ const KnowledgeBase = () => {
                                 )}
                             </div>
                         )}
-                        {!loading && !answer && !error && <p className="text-center text-gray-500 py-16">{t('kb_get_started')}</p>}
+                        {!loading && !answer && <p className="text-center text-gray-500 py-16">{t('kb_get_started')}</p>}
                     </div>
                 </div>
                 <div className="lg:col-span-1 space-y-4">

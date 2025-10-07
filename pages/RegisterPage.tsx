@@ -4,11 +4,10 @@ import { LogoIcon, ArrowLeftIcon } from '../components/Icons.js';
 import { supabase } from '../lib/supabaseClient.js';
 
 const RegisterPage = () => {
-    const { t, isOnline } = useAppContext();
+    const { t, isOnline, showToast } = useAppContext();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
@@ -19,11 +18,10 @@ const RegisterPage = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
         setSuccess(false);
 
         if (!isOnline) {
-            setError(t('error_offline_register'));
+            showToast(t('error_offline_register'), 'error');
             return;
         }
 
@@ -41,7 +39,8 @@ const RegisterPage = () => {
         });
 
         if (signUpError) {
-            setError(signUpError.message);
+            console.error("Registration Error:", signUpError.message);
+            showToast(t('error_registration_failed'), 'error');
             setLoading(false);
             return;
         }
@@ -98,8 +97,6 @@ const RegisterPage = () => {
                     <h2 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">Create your Account</h2>
                 </div>
                 
-                {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">{error}</div>}
-
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>
                         <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300">

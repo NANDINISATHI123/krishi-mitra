@@ -5,7 +5,7 @@ import { Feedback } from '../../types.js';
 import SkeletonLoader from '../SkeletonLoader.js';
 
 const FeedbackViewer = () => {
-    const { t } = useAppContext();
+    const { t, showToast } = useAppContext();
     const [feedback, setFeedback] = useState<Feedback[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -21,9 +21,17 @@ const FeedbackViewer = () => {
 
     const handleDelete = async (feedbackId: string) => {
         if (window.confirm(t('confirm_delete'))) {
+            const originalFeedback = [...feedback];
+            // Optimistic UI update
+            setFeedback(feedback.filter(f => f.id !== feedbackId));
+
             const success = await deleteFeedback(feedbackId);
             if (success) {
-                setFeedback(feedback.filter(f => f.id !== feedbackId));
+                showToast(t('success_generic'), 'success');
+            } else {
+                showToast(t('error_delete_failed'), 'error');
+                // Revert on failure
+                setFeedback(originalFeedback);
             }
         }
     };

@@ -4,6 +4,7 @@ import Header from './components/Header.js';
 import Footer from './components/Footer.js';
 import HomePage from './pages/HomePage.js';
 import { CheckCircleIcon, CloseIcon, LogoIcon } from './components/Icons.js';
+import ToastContainer from './components/Toast.js';
 
 // Lazy load dashboard components to enable code-splitting.
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard.js'));
@@ -145,6 +146,7 @@ const App = () => {
     return (
         <AppContextProvider>
             <div className="flex flex-col min-h-screen bg-bg-light dark:bg-bg-dark text-text-light dark:text-text-dark font-body">
+                <ToastContainer />
                 {!isAuthPage && <Header />}
                 <OfflineBanner />
                 <SyncSuccessBanner />

@@ -5,7 +5,7 @@ import { CalendarTask } from '../../types.js';
 import SkeletonLoader from '../SkeletonLoader.js';
 
 const CalendarManagement = () => {
-    const { t } = useAppContext();
+    const { t, showToast } = useAppContext();
     const [tasks, setTasks] = useState<CalendarTask[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setModalOpen] = useState(false);
@@ -34,11 +34,14 @@ const CalendarManagement = () => {
 
     const handleSave = async (taskData: CalendarTask) => {
         const isEditing = !!editingTask;
-        if (isEditing) {
-            await updateTask(taskData);
+        const newData = isEditing ? taskData : (({ id, created_at, ...d }) => d)(taskData);
+        
+        const result = isEditing ? await updateTask(newData as CalendarTask) : await saveTask(newData);
+        
+        if (result) {
+            showToast(t('success_generic'), 'success');
         } else {
-            const { id, created_at, ...newData } = taskData;
-            await saveTask(newData);
+            showToast(t('error_save_failed'), 'error');
         }
         setModalOpen(false);
         loadTasks();
@@ -46,8 +49,13 @@ const CalendarManagement = () => {
 
     const handleDelete = async (taskId: string) => {
         if (window.confirm(t('confirm_delete'))) {
-            await deleteTask(taskId);
-            loadTasks();
+            const success = await deleteTask(taskId);
+            if (success) {
+                showToast(t('success_generic'), 'success');
+                loadTasks();
+            } else {
+                showToast(t('error_delete_failed'), 'error');
+            }
         }
     };
     

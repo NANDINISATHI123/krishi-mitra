@@ -24,17 +24,19 @@ export const getOutcomes = async (userId: string): Promise<Outcome[]> => {
  * @param outcomeData - The outcome data to be inserted.
  */
 export const addOutcome = async (outcomeData: Omit<Outcome, 'id' | 'created_at'>): Promise<Outcome | null> => {
-    const { data, error } = await supabase
-        .from('outcomes')
-        .insert(outcomeData)
-        .select()
-        .single();
-    
-    if (error) {
-        console.error('Error adding outcome:', error.message);
-        throw error; // Let the caller handle the error
+    try {
+        const { data, error } = await supabase
+            .from('outcomes')
+            .insert(outcomeData)
+            .select()
+            .single();
+        
+        if (error) throw error;
+        return data as Outcome;
+    } catch(error) {
+        console.error('Error adding outcome:', error);
+        return null;
     }
-    return data as Outcome;
 };
 
 /**

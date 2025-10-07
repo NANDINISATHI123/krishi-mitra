@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode, useCa
 import { supabase } from '../lib/supabaseClient.js';
 import { Session, User } from '@supabase/supabase-js';
 import { translations, Language } from '../lib/translations.js';
-import { Profile, Theme, FontSize } from '../types.js';
+import { Profile, Theme, FontSize, ToastMessage } from '../types.js';
 import { getQueuedActions, processActionQueue } from '../services/offlineService.js';
 
 interface AppContextType {
@@ -24,6 +24,9 @@ interface AppContextType {
     setSyncSuccessMessage: (message: string) => void;
     isSidebarOpen: boolean;
     setIsSidebarOpen: (isOpen: boolean) => void;
+    toasts: ToastMessage[];
+    showToast: (message: string, type?: 'success' | 'error' | 'info') => void;
+    removeToast: (id: number) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -39,6 +42,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
     const [refreshKey, setRefreshKey] = useState(0);
     const [syncSuccessMessage, setSyncSuccessMessage] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
     const [theme, setTheme] = useState<Theme>(() => {
         const savedTheme = localStorage.getItem('theme') as Theme;
@@ -48,6 +52,22 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
     const [language, setLanguage] = useState<Language>(() => {
         return (localStorage.getItem('language') as Language) || 'en';
     });
+    
+    const t = useCallback((key: keyof typeof translations['en']): string => {
+        return translations[language]?.[key] || translations['en'][key];
+    }, [language]);
+    
+    const removeToast = useCallback((id: number) => {
+        setToasts(currentToasts => currentToasts.filter(toast => toast.id !== id));
+    }, []);
+
+    const showToast = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
+        const id = Date.now();
+        setToasts(currentToasts => [...currentToasts, { id, message, type }]);
+        setTimeout(() => {
+            removeToast(id);
+        }, 5000); // Auto-dismiss after 5 seconds
+    }, [removeToast]);
 
     const refreshPendingCount = useCallback(async () => {
         const actions = await getQueuedActions();
@@ -91,12 +111,13 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
             }
         } catch (error) {
             console.error("Critical error fetching or creating profile:", error);
+            showToast(t('error_generic'), 'error');
             await supabase.auth.signOut();
             setProfile(null); 
         } finally {
             setProfileLoading(false);
         }
-    }, []);
+    }, [showToast, t]);
     
     // Effect to set up auth listener and handle initial session
     useEffect(() => {
@@ -139,9 +160,9 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
 
         const handleOnline = async () => {
             setIsOnline(true);
-            const synced = await processActionQueue();
-            if (synced) {
-                setSyncSuccessMessage(translations[language].sync_complete_refresh);
+            const { success } = await processActionQueue(showToast, t);
+            if (success) {
+                setSyncSuccessMessage(t('sync_complete_refresh'));
                 setRefreshKey(prev => prev + 1);
             }
             await refreshPendingCount();
@@ -155,7 +176,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
             window.removeEventListener('online', handleOnline);
             window.removeEventListener('offline', handleOffline);
         };
-    }, [refreshPendingCount, language]);
+    }, [refreshPendingCount, showToast, t]);
 
     // Effect to explicitly refresh data when `refreshKey` changes (e.g., after sync)
     useEffect(() => {
@@ -178,10 +199,6 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
     const toggleTheme = () => {
         setTheme(prevTheme => (prevTheme === 'light' ? 'dark' : 'light'));
     };
-
-    const t = (key: keyof typeof translations['en']): string => {
-        return translations[language]?.[key] || translations['en'][key];
-    };
     
     const value = {
         session,
@@ -202,6 +219,9 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
         setSyncSuccessMessage,
         isSidebarOpen,
         setIsSidebarOpen,
+        toasts,
+        showToast,
+        removeToast,
     };
 
     return (

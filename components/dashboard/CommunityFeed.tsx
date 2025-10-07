@@ -7,7 +7,7 @@ import SkeletonLoader from '../SkeletonLoader.js';
 import { UploadIcon, CloseIcon, PendingIcon } from '../Icons.js';
 
 const CommunityFeed = () => {
-    const { t, user, profile, isOnline, refreshData, refreshPendingCount } = useAppContext();
+    const { t, user, profile, isOnline, refreshData, refreshPendingCount, showToast } = useAppContext();
     const [posts, setPosts] = useState<CommunityPost[]>([]);
     const [loading, setLoading] = useState(true);
     const [newPostContent, setNewPostContent] = useState('');
@@ -60,13 +60,13 @@ const CommunityFeed = () => {
         clearInput();
 
         if (isOnline) {
-            try {
-                await addPost(content, user.id, file);
-                fetchPosts(); // Refresh with real data
-            } catch (error) {
-                alert("Failed to create post.");
-                fetchPosts(); // Revert
+            const result = await addPost(content, user.id, file);
+            if (result) {
+                showToast(t('success_post_created'), 'success');
+            } else {
+                showToast(t('error_post_failed'), 'error');
             }
+            fetchPosts(); // Refresh with real data
         } else {
             const serializableFile = file ? { blob: file, name: file.name, type: file.type } : undefined;
             await addActionToQueue({
@@ -76,7 +76,7 @@ const CommunityFeed = () => {
                 file: serializableFile
             });
             refreshPendingCount();
-            alert(t('post_queued'));
+            showToast(t('post_queued'), 'info');
         }
     };
 

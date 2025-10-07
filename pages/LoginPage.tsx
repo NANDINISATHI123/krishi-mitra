@@ -4,10 +4,9 @@ import { LogoIcon, ArrowLeftIcon } from '../components/Icons.js';
 import { supabase } from '../lib/supabaseClient.js';
 
 const LoginPage = () => {
-    const { t, isOnline } = useAppContext();
+    const { t, isOnline, showToast } = useAppContext();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
@@ -17,10 +16,9 @@ const LoginPage = () => {
     
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setError('');
 
         if (!isOnline) {
-            setError(t('error_offline_login'));
+            showToast(t('error_offline_login'), 'error');
             return;
         }
 
@@ -32,7 +30,8 @@ const LoginPage = () => {
         });
 
         if (signInError) {
-            setError(signInError.message);
+            console.error("Login Error:", signInError.message);
+            showToast(t('error_login_failed'), 'error');
         } else {
             // The onAuthStateChange listener in AppContext will handle fetching
             // the profile and the router in App.tsx will redirect.
@@ -56,8 +55,6 @@ const LoginPage = () => {
                     <LogoIcon className="h-16 w-16 mx-auto text-primary" />
                     <h2 className="mt-4 text-3xl font-bold text-gray-900 dark:text-white">Login to Krishi Mitra</h2>
                 </div>
-
-                {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">{error}</div>}
 
                 <form className="space-y-6" onSubmit={handleSubmit}>
                     <div>

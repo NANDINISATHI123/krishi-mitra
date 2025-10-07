@@ -7,34 +7,30 @@ import { supabase } from '../lib/supabaseClient.js';
  * to bypass restrictive Row Level Security (RLS) policies.
  */
 export const getProfiles = async (): Promise<Profile[]> => {
-    const { data, error } = await supabase.rpc('get_all_users_admin');
-
-    if (error) {
-        console.error('Error fetching profiles via RPC:', error.message);
+    try {
+        const { data, error } = await supabase.rpc('get_all_users_admin');
+        if (error) throw error;
+        return data as Profile[];
+    } catch (error) {
+        console.error('Error fetching profiles via RPC:', error);
         return [];
     }
-    return data as Profile[];
 };
 
 /**
  * Updates the role of a specific user. This is an admin-only action.
- * It directly calls the `auth.admin.updateUserById` method, which requires
- * the service_role key to be used in the Supabase client.
- * For this client-side app, we'll use an RPC to a secure database function.
- * 
- * NOTE: This requires a corresponding `update_user_role` function to be created in the database.
- * The function should be defined as `SECURITY DEFINER` to have the necessary permissions.
+ * It uses an RPC call to a secure database function.
  */
-export const updateProfileRole = async (userId: string, role: 'admin' | 'employee'): Promise<{ success: boolean; error?: string }> => {
-    const { error } = await supabase.rpc('update_user_role', {
-        user_id: userId,
-        new_role: role,
-    });
-    
-    if (error) {
-        console.error('Error updating user role via RPC:', error.message);
-        return { success: false, error: error.message };
+export const updateProfileRole = async (userId: string, role: 'admin' | 'employee'): Promise<boolean> => {
+    try {
+        const { error } = await supabase.rpc('update_user_role', {
+            user_id: userId,
+            new_role: role,
+        });
+        if (error) throw error;
+        return true;
+    } catch (error) {
+        console.error('Error updating user role via RPC:', error);
+        return false;
     }
-
-    return { success: true };
 };

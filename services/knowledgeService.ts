@@ -70,12 +70,14 @@ export const getHistory = async (userId: string): Promise<QuestionHistory[]> => 
 };
 
 export const addHistory = async (userId: string, question: string): Promise<QuestionHistory | null> => {
-    const { data, error } = await supabase.from('question_history').insert({ user_id: userId, question }).select().single();
-    if (error) {
+    try {
+        const { data, error } = await supabase.from('question_history').insert({ user_id: userId, question }).select().single();
+        if (error) throw error;
+        return data;
+    } catch (error) {
         console.error("Error adding history:", error);
-        throw error;
+        return null;
     }
-    return data;
 };
 
 export const getBookmarks = async (userId: string): Promise<Bookmark[]> => {
@@ -84,10 +86,12 @@ export const getBookmarks = async (userId: string): Promise<Bookmark[]> => {
 };
 
 export const addBookmark = async (userId: string, question: string, answer: string): Promise<Bookmark | null> => {
-    const { data, error } = await supabase.from('bookmarks').insert({ user_id: userId, question, answer }).select().single();
-    if (error) {
+    try {
+        const { data, error } = await supabase.from('bookmarks').insert({ user_id: userId, question, answer }).select().single();
+        if (error) throw error;
+        return data;
+    } catch (error) {
         console.error("Error adding bookmark:", error);
-        throw error;
+        return null;
     }
-    return data;
 };

@@ -5,7 +5,7 @@ import { Profile } from '../../types.js';
 import SkeletonLoader from '../SkeletonLoader.js';
 
 const UserManagement = () => {
-    const { t } = useAppContext();
+    const { t, showToast } = useAppContext();
     const [profiles, setProfiles] = useState<Profile[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -21,12 +21,12 @@ const UserManagement = () => {
 
     const handleRoleChange = async (userId: string, newRole: 'admin' | 'employee') => {
         const result = await updateProfileRole(userId, newRole);
-        if (result.success) {
-            alert(t('user_role_updated'));
+        if (result) {
+            showToast(t('success_role_updated'), 'success');
             // Optimistically update the UI
             setProfiles(profiles.map(p => p.id === userId ? { ...p, role: newRole } : p));
         } else {
-            alert(`${t('user_role_update_failed')}: ${result.error}`);
+            showToast(t('user_role_update_failed'), 'error');
         }
     };
 
