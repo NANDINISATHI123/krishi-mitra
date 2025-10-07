@@ -5,9 +5,10 @@ const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v11'; // INCREMENTED VERSION
 
 // App Shell: All the essential files for the app to run.
 const APP_SHELL_FILES = [
-  '/',
-  '/manifest.json',
-  '/logo.svg',
+  './',
+  'index.html',
+  'manifest.json',
+  'logo.svg',
 ];
 
 
@@ -56,7 +57,7 @@ self.addEventListener('fetch', event => {
         event.respondWith(
             fetch(request).catch(() => {
                 console.log('[SW] Fetch failed for navigation, serving app shell from cache.');
-                return caches.match('/');
+                return caches.match('index.html');
             })
         );
         return;
