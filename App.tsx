@@ -1,14 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { AppContextProvider, useAppContext } from './context/AppContext.js';
 import Header from './components/Header.js';
 import Footer from './components/Footer.js';
 import HomePage from './pages/HomePage.js';
 import LoginPage from './pages/LoginPage.js';
 import RegisterPage from './pages/RegisterPage.js';
-// FIX: Corrected import paths.
-import AdminDashboard from './pages/AdminDashboard.js';
-import EmployeeDashboard from './pages/EmployeeDashboard.js';
 import { CheckCircleIcon, CloseIcon, LogoIcon } from './components/Icons.js';
+
+// Lazy load dashboard components to enable code-splitting.
+// This prevents them from being loaded until a user is logged in,
+// fixing the "white screen" issue on the public homepage.
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard.js'));
+const EmployeeDashboard = lazy(() => import('./pages/EmployeeDashboard.js'));
+
+const DashboardLoader = () => (
+    <div className="flex flex-col justify-center items-center h-[calc(100vh-200px)]">
+        <LogoIcon className="h-20 w-20 text-primary animate-pulse" />
+        <p className="mt-4 text-lg font-semibold">Loading Dashboard...</p>
+    </div>
+);
+
 
 const Router = () => {
     const { profile, user, profileLoading, authLoading } = useAppContext();
@@ -49,10 +60,10 @@ const Router = () => {
         const employeePath = 'dashboard/employee';
 
         if (profile.role === 'admin' && (path === adminPath || path === '')) {
-            return <AdminDashboard />;
+            return <Suspense fallback={<DashboardLoader />}><AdminDashboard /></Suspense>;
         }
         if (profile.role === 'employee' && (path === employeePath || path === '')) {
-             return <EmployeeDashboard />;
+             return <Suspense fallback={<DashboardLoader />}><EmployeeDashboard /></Suspense>;
         }
          // If a logged-in user tries to access login/register or another dashboard, redirect them.
         if (path === 'login' || path === 'register' || (profile.role === 'admin' && path === employeePath) || (profile.role === 'employee' && path === adminPath)) {
