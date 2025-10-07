@@ -1,0 +1,24 @@
+# This is the main configuration file for Netlify.
+
+# This section tells Netlify's servers how to correctly serve your TypeScript files.
+# It is the critical fix for the "Strict MIME type checking" error that causes the blank screen.
+[[headers]]
+  for = "/*.ts"
+  [headers.values]
+    Content-Type = "text/babel; charset=UTF-8"
+
+[[headers]]
+  for = "/*.tsx"
+  [headers.values]
+    Content-Type = "text/babel; charset=UTF-8"
+
+# This tells Netlify where to find your serverless functions (like gemini-proxy.ts).
+[functions]
+  directory = "netlify/functions/"
+
+# This rule is important for single-page applications. It ensures that if a user
+# refreshes the page on a path like /dashboard, Netlify still serves the main index.html file.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
