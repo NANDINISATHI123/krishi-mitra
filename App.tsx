@@ -34,64 +34,52 @@ const Router = () => {
 
     useEffect(() => {
         const handleHashChange = () => {
-            console.log(`[DEBUG] Router: Hash changed from ${hash} to ${window.location.hash}`);
+            console.log(`%c[DEBUG] Router: Hash changed event fired. New hash: ${window.location.hash}`, 'color: purple;');
             setHash(window.location.hash);
         };
         window.addEventListener('hashchange', handleHashChange);
         return () => window.removeEventListener('hashchange', handleHashChange);
-    }, [hash]);
+    }, []);
 
     const path = hash.substring(1);
-    console.log(`[DEBUG] Router: Rendering for path: "${path}"`);
+    console.log(`%c[DEBUG] Router: Evaluating path: "${path}"`, 'color: purple; font-weight: bold;');
 
-    // While initial authentication is happening, render nothing from React.
-    // This allows the static App Shell in index.html to remain visible,
-    // providing a seamless loading experience without a flash of content.
     if (authLoading) {
-        console.log("[DEBUG] Router: Auth is loading. Rendering null.");
+        console.log("[DEBUG] Router: Auth is loading. Rendering null to keep static shell visible.");
         return null;
     }
 
-    // --- Authenticated User Flow ---
     if (user) {
-        console.log("[DEBUG] Router: User is authenticated.");
-        // If profile is still loading, show a specific dashboard loader
+        console.log("[DEBUG] Router: User IS authenticated.");
         if (profileLoading || !profile) {
-            console.log("[DEBUG] Router: Profile is loading. Showing DashboardLoader.");
+            console.log("[DEBUG] Router: Profile is still loading. Showing DashboardLoader.");
             return <DashboardLoader />;
         }
         
-        console.log(`[DEBUG] Router: User role is "${profile.role}".`);
-        // Render the correct dashboard based on user role
+        console.log(`[DEBUG] Router: User role is "${profile.role}". Rendering appropriate dashboard.`);
         if (profile.role === 'admin') {
             return <Suspense fallback={<DashboardLoader />}><AdminDashboard /></Suspense>;
         }
-        if (profile.role === 'employee') {
-            return <Suspense fallback={<DashboardLoader />}><EmployeeDashboard /></Suspense>;
-        }
+        return <Suspense fallback={<DashboardLoader />}><EmployeeDashboard /></Suspense>;
     }
 
-    console.log("[DEBUG] Router: User is not authenticated. Checking public routes.");
-    // --- Unauthenticated User Flow ---
-    if (path === 'login') {
-        console.log("[DEBUG] Router: Rendering LoginPage.");
-        return <Suspense fallback={<AuthPageLoader />}><LoginPage /></Suspense>;
+    console.log("[DEBUG] Router: User is NOT authenticated. Evaluating public routes...");
+    switch (path) {
+        case 'login':
+            console.log("[DEBUG] Router: Path matches 'login'. Rendering LoginPage.");
+            return <Suspense fallback={<AuthPageLoader />}><LoginPage /></Suspense>;
+        case 'register':
+            console.log("[DEBUG] Router: Path matches 'register'. Rendering RegisterPage.");
+            return <Suspense fallback={<AuthPageLoader />}><RegisterPage /></Suspense>;
+        default:
+            if (path.startsWith('dashboard/')) {
+                console.log("[DEBUG] Router: Unauthorized dashboard access attempt. Redirecting to #login.");
+                window.location.hash = 'login';
+                return null;
+            }
+            console.log("[DEBUG] Router: Default case. Rendering HomePage.");
+            return <HomePage />;
     }
-    if (path === 'register') {
-        console.log("[DEBUG] Router: Rendering RegisterPage.");
-        return <Suspense fallback={<AuthPageLoader />}><RegisterPage /></Suspense>;
-    }
-    
-    // If an unauthenticated user tries to access a dashboard path, redirect them
-    if (path.startsWith('dashboard/')) {
-        console.log("[DEBUG] Router: Unauthorized dashboard access. Redirecting to #login.");
-        window.location.hash = 'login';
-        return null;
-    }
-
-    // Default to the homepage for all other cases
-    console.log("[DEBUG] Router: No specific route matched. Rendering HomePage.");
-    return <HomePage />;
 };
 
 

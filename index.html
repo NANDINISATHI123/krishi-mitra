@@ -174,8 +174,8 @@
                   </a>
                   <nav class="app-shell-nav" style="display: flex; align-items: center; gap: 1.5rem;">
                      <a href="#">Home</a>
-                     <a href="#login">Login</a>
-                     <a href="#register" class="app-shell-button">Register</a>
+                     <a href="#login" onclick="console.log('%c[DEBUG] Static HTML: Login button was clicked.', 'color: blue;')">Login</a>
+                     <a href="#register" class="app-shell-button" onclick="console.log('%c[DEBUG] Static HTML: Register button was clicked.', 'color: blue;')">Register</a>
                   </nav>
               </div>
           </header>
@@ -185,7 +185,7 @@
               <div>
                 <h1 class="app-shell-hero-title">Smarter Farming, Healthier Crops</h1>
                 <p class="app-shell-hero-subtitle">Leverage AI to diagnose crop diseases, get timely weather alerts, and access a wealth of agricultural knowledge. All in your language.</p>
-                <a href="#register" class="app-shell-hero-button">
+                <a href="#register" class="app-shell-hero-button" onclick="console.log('%c[DEBUG] Static HTML: Get Started button was clicked.', 'color: blue;')">
                   Get Started
                   <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -237,14 +237,14 @@
         const script = document.createElement('script');
         script.type = 'text/babel';
         script.setAttribute('data-presets', 'react,typescript');
-        // Use a simple relative path for maximum compatibility.
-        script.src = 'index.tsx';
+        // DEFINITIVE FIX: Use a .js extension that all servers will serve correctly.
+        script.src = 'app.js';
         
-        script.onload = () => console.log('[DEBUG] App Loader: The index.tsx script has successfully loaded and been parsed by Babel.');
-        script.onerror = () => console.error('[DEBUG] App Loader: CRITICAL - The index.tsx script failed to load. Check the Network tab for a 404 error.');
+        script.onload = () => console.log('[DEBUG] App Loader: The app.js script has successfully loaded and been parsed by Babel.');
+        script.onerror = () => console.error('[DEBUG] App Loader: CRITICAL - The app.js script failed to load. Check the Network tab for a 404 error.');
 
         document.body.appendChild(script);
-        console.log('[DEBUG] App Loader: Appended script tag for index.tsx to the body. The browser will now fetch it.');
+        console.log('[DEBUG] App Loader: Appended script tag for app.js to the body. The browser will now fetch it.');
       })();
     </script>
     
