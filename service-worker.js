@@ -1,12 +1,13 @@
 // --- Service Worker for Krishi Mitra ---
 
-const CACHE_NAME = 'krishi-mitra-static-v11'; // INCREMENTED VERSION
-const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v11'; // INCREMENTED VERSION
+const CACHE_NAME = 'krishi-mitra-static-v12'; // INCREMENTED VERSION
+const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v12'; // INCREMENTED VERSION
 
-// App Shell: All the essential files for the app to run.
+// App Shell: All the essential files for the app to run. Use absolute paths.
 const APP_SHELL_FILES = [
-  './index.html',
-  './manifest.json',
+  '/index.html',
+  '/manifest.json',
+  '/',
 ];
 
 
@@ -55,7 +56,8 @@ self.addEventListener('fetch', event => {
         event.respondWith(
             fetch(request).catch(() => {
                 console.log('[SW] Fetch failed for navigation, serving app shell from cache.');
-                return caches.match('./index.html');
+                // Use absolute path for the fallback.
+                return caches.match('/index.html');
             })
         );
         return;
