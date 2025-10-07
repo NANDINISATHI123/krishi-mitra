@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { AppContextProvider, useAppContext } from './context/AppContext.tsx';
-import Header from './components/Header.tsx';
-import Footer from './components/Footer.tsx';
-import HomePage from './pages/HomePage.tsx';
-import LoginPage from './pages/LoginPage.tsx';
-import RegisterPage from './pages/RegisterPage.tsx';
+import { AppContextProvider, useAppContext } from './context/AppContext.js';
+import Header from './components/Header.js';
+import Footer from './components/Footer.js';
+import HomePage from './pages/HomePage.js';
+import LoginPage from './pages/LoginPage.js';
+import RegisterPage from './pages/RegisterPage.js';
 // FIX: Corrected import paths.
-import AdminDashboard from './pages/AdminDashboard.tsx';
-import EmployeeDashboard from './pages/EmployeeDashboard.tsx';
-import { CheckCircleIcon, CloseIcon, LogoIcon } from './components/Icons.tsx';
+import AdminDashboard from './pages/AdminDashboard.js';
+import EmployeeDashboard from './pages/EmployeeDashboard.js';
+import { CheckCircleIcon, CloseIcon, LogoIcon } from './components/Icons.js';
 
 const Router = () => {
     const { profile, user, profileLoading } = useAppContext();

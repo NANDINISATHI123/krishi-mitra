@@ -1,7 +1,5 @@
-
-
 import React from 'react';
-import { useAppContext } from '../context/AppContext.tsx';
+import { useAppContext } from '../context/AppContext.js';
 
 const Footer = () => {
     const { t } = useAppContext();

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Language } from '../lib/translations.ts';
+import { Language } from '../lib/translations.js';
 
 interface SpeechRecognition extends EventTarget {
   lang: string;

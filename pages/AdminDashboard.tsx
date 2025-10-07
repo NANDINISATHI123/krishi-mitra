@@ -1,15 +1,13 @@
-
-
 import React, { useState } from 'react';
-import { useAppContext } from '../context/AppContext.tsx';
-import UserManagement from '../components/admin/UserManagement.tsx';
-import ContentManagement from '../components/admin/ContentManagement.tsx';
-import SupplierManagement from '../components/admin/SupplierManagement.tsx';
-import FeedbackViewer from '../components/admin/FeedbackViewer.tsx';
-import AiDiagnosisReports from '../components/admin/DangerReports.tsx';
-import SuccessTrackerViewer from '../components/admin/SuccessTrackerViewer.tsx';
-import CommunityFeedViewer from '../components/admin/CommunityFeedViewer.tsx';
-import CalendarManagement from '../components/admin/CalendarManagement.tsx';
+import { useAppContext } from '../context/AppContext.js';
+import UserManagement from '../components/admin/UserManagement.js';
+import ContentManagement from '../components/admin/ContentManagement.js';
+import SupplierManagement from '../components/admin/SupplierManagement.js';
+import FeedbackViewer from '../components/admin/FeedbackViewer.js';
+import AiDiagnosisReports from '../components/admin/DangerReports.js';
+import SuccessTrackerViewer from '../components/admin/SuccessTrackerViewer.js';
+import CommunityFeedViewer from '../components/admin/CommunityFeedViewer.js';
+import CalendarManagement from '../components/admin/CalendarManagement.js';
 
 type AdminTab = 'users' | 'tutorials' | 'suppliers' | 'reports' | 'calendar' | 'outcomes' | 'community' | 'feedback';
 

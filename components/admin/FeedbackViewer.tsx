@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext.tsx';
-import { deleteFeedback, getAllFeedbackAdmin } from '../../services/communityService.ts';
-import { Feedback } from '../../types.ts';
-import SkeletonLoader from '../SkeletonLoader.tsx';
+import { useAppContext } from '../../context/AppContext.js';
+import { deleteFeedback, getAllFeedbackAdmin } from '../../services/communityService.js';
+import { Feedback } from '../../types.js';
+import SkeletonLoader from '../SkeletonLoader.js';
 
 const FeedbackViewer = () => {
     const { t } = useAppContext();

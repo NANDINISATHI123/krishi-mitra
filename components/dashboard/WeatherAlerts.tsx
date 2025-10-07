@@ -1,11 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext.tsx';
-import { getRealForecast, getMockWeatherRisk } from '../../services/weatherService.ts';
-import { cacheContent, getCachedContent } from '../../services/offlineService.ts';
-import { WeatherRisk } from '../../types.ts';
-import { SunIcon, RainIcon, CloudyIcon, ThunderstormIcon } from '../Icons.tsx';
-import SkeletonLoader from '../SkeletonLoader.tsx';
+import { useAppContext } from '../../context/AppContext.js';
+import { getRealForecast, getMockWeatherRisk } from '../../services/weatherService.js';
+import { cacheContent, getCachedContent } from '../../services/offlineService.js';
+import { WeatherRisk } from '../../types.js';
+import { SunIcon, RainIcon, CloudyIcon, ThunderstormIcon } from '../Icons.js';
+import SkeletonLoader from '../SkeletonLoader.js';
 
 const WeatherAlerts: React.FC = () => {
     const { t, language, isOnline } = useAppContext();

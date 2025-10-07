@@ -1,7 +1,7 @@
-import { KnowledgeAnswer, QuestionHistory, Bookmark } from '../types.ts';
+import { KnowledgeAnswer, QuestionHistory, Bookmark } from '../types.js';
 import { GoogleGenAI, Type } from '@google/genai';
-import { Language } from '../lib/translations.ts';
-import { supabase } from '../lib/supabaseClient.ts';
+import { Language } from '../lib/translations.js';
+import { supabase } from '../lib/supabaseClient.js';
 
 const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
 

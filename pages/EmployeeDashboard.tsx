@@ -1,17 +1,15 @@
-
-
 import React, { useState } from 'react';
-import { useAppContext } from '../context/AppContext.tsx';
-import AIDiagnosis from '../components/dashboard/AIDiagnosis.tsx';
-import WeatherAlerts from '../components/dashboard/WeatherAlerts.tsx';
-import AdvisoryCalendar from '../components/dashboard/AdvisoryCalendar.tsx';
-import KnowledgeBase from '../components/dashboard/KnowledgeBase.tsx';
-import SuccessTracker from '../components/dashboard/SuccessTracker.tsx';
-import SuppliersDirectory from '../components/dashboard/SuppliersDirectory.tsx';
-import VideoTutorials from '../components/dashboard/VideoTutorials.tsx';
-import CommunityFeed from '../components/dashboard/CommunityFeed.tsx';
-import FeedbackModal from '../components/dashboard/FeedbackModal.tsx';
-import { FeedbackIcon } from '../components/Icons.tsx';
+import { useAppContext } from '../context/AppContext.js';
+import AIDiagnosis from '../components/dashboard/AIDiagnosis.js';
+import WeatherAlerts from '../components/dashboard/WeatherAlerts.js';
+import AdvisoryCalendar from '../components/dashboard/AdvisoryCalendar.js';
+import KnowledgeBase from '../components/dashboard/KnowledgeBase.js';
+import SuccessTracker from '../components/dashboard/SuccessTracker.js';
+import SuppliersDirectory from '../components/dashboard/SuppliersDirectory.js';
+import VideoTutorials from '../components/dashboard/VideoTutorials.js';
+import CommunityFeed from '../components/dashboard/CommunityFeed.js';
+import FeedbackModal from '../components/dashboard/FeedbackModal.js';
+import { FeedbackIcon } from '../components/Icons.js';
 
 type Tab = 'ai_diagnosis' | 'weather_alerts' | 'advisory_calendar' | 'knowledge_base' | 'success_tracker' | 'suppliers_directory' | 'video_tutorials' | 'community_feed';
 

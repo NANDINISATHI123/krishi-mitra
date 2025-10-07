@@ -1,12 +1,11 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useAppContext } from '../../context/AppContext.tsx';
-import { useSpeech } from '../../hooks/useSpeech.ts';
-import { getKnowledgeAnswer, getHistory, addHistory, getBookmarks, addBookmark } from '../../services/knowledgeService.ts';
-import { addActionToQueue, cacheKnowledgeAnswer, getCachedKnowledgeAnswer } from '../../services/offlineService.ts';
-import { KnowledgeAnswer, QuestionHistory, Bookmark } from '../../types.ts';
-import { SearchIcon, BookmarkIcon, PendingIcon, SpeakerIcon, MicrophoneIcon } from '../Icons.tsx';
-import SkeletonLoader from '../SkeletonLoader.tsx';
+import { useAppContext } from '../../context/AppContext.js';
+import { useSpeech } from '../../hooks/useSpeech.js';
+import { getKnowledgeAnswer, getHistory, addHistory, getBookmarks, addBookmark } from '../../services/knowledgeService.js';
+import { addActionToQueue, cacheKnowledgeAnswer, getCachedKnowledgeAnswer } from '../../services/offlineService.js';
+import { KnowledgeAnswer, QuestionHistory, Bookmark } from '../../types.js';
+import { SearchIcon, BookmarkIcon, PendingIcon, SpeakerIcon, MicrophoneIcon } from '../Icons.js';
+import SkeletonLoader from '../SkeletonLoader.js';
 
 const KnowledgeBase = () => {
     const { t, user, language, isOnline, refreshData, refreshPendingCount } = useAppContext();

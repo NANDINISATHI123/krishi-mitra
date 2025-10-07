@@ -1,10 +1,8 @@
-
-
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext.tsx';
-import { getTasks, saveTask, updateTask, deleteTask } from '../../services/calendarService.ts';
-import { CalendarTask } from '../../types.ts';
-import SkeletonLoader from '../SkeletonLoader.tsx';
+import { useAppContext } from '../../context/AppContext.js';
+import { getTasks, saveTask, updateTask, deleteTask } from '../../services/calendarService.js';
+import { CalendarTask } from '../../types.js';
+import SkeletonLoader from '../SkeletonLoader.js';
 
 const CalendarManagement = () => {
     const { t } = useAppContext();

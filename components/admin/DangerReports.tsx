@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext.tsx';
-import { getReports } from '../../services/reportService.ts';
-import { Report } from '../../types.ts';
-import SkeletonLoader from '../SkeletonLoader.tsx';
+import { useAppContext } from '../../context/AppContext.js';
+import { getReports } from '../../services/reportService.js';
+import { Report } from '../../types.js';
+import SkeletonLoader from '../SkeletonLoader.js';
 
 const AiDiagnosisReports = () => {
     const { t } = useAppContext();

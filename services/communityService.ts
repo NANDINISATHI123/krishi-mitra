@@ -1,5 +1,5 @@
-import { CommunityPost, Feedback, Profile } from '../types.ts';
-import { supabase } from '../lib/supabaseClient.ts';
+import { CommunityPost, Feedback, Profile } from '../types.js';
+import { supabase } from '../lib/supabaseClient.js';
 
 // --- Community Feed ---
 export const getPosts = async (): Promise<CommunityPost[]> => {

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext.tsx';
-import { getAllOutcomes } from '../../services/trackerService.ts';
-import { Outcome } from '../../types.ts';
-import SkeletonLoader from '../SkeletonLoader.tsx';
+import { useAppContext } from '../../context/AppContext.js';
+import { getAllOutcomes } from '../../services/trackerService.js';
+import { Outcome } from '../../types.js';
+import SkeletonLoader from '../SkeletonLoader.js';
 
 const SuccessTrackerViewer = () => {
     const { t } = useAppContext();
@@ -50,7 +50,7 @@ const SuccessTrackerViewer = () => {
                                 ))}
                             </tbody>
                         </table>
-                        {outcomes.length === 0 && <p className="text-center py-8 text-gray-500">No harvests tracked by any user yet.</p>}
+                        {outcomes.length === 0 && <p className="text-center py-8 text-gray-500">No harvests tracked yet.</p>}
                     </div>
                 )}
             </div>

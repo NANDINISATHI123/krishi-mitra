@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../../context/AppContext.tsx';
-import { getAllPostsAdmin } from '../../services/communityService.ts';
-import { CommunityPost } from '../../types.ts';
-import SkeletonLoader from '../SkeletonLoader.tsx';
+import { useAppContext } from '../../context/AppContext.js';
+import { getAllPostsAdmin } from '../../services/communityService.js';
+import { CommunityPost } from '../../types.js';
+import SkeletonLoader from '../SkeletonLoader.js';
 
 const CommunityFeedViewer = () => {
     const { t } = useAppContext();

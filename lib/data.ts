@@ -1,4 +1,4 @@
-import { Testimonial, CalendarTask, Supplier, Tutorial, CommunityPost } from '../types.ts';
+import { Testimonial, CalendarTask, Supplier, Tutorial, CommunityPost } from '../types.js';
 
 export const mockTestimonials: Testimonial[] = [
 ];

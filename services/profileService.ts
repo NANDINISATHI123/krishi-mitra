@@ -1,5 +1,5 @@
-import { Profile } from '../types.ts';
-import { supabase } from '../lib/supabaseClient.ts';
+import { Profile } from '../types.js';
+import { supabase } from '../lib/supabaseClient.js';
 
 /**
  * Fetches all user profiles from the database for an admin.

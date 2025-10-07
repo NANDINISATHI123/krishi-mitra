@@ -1,8 +1,6 @@
-
-
-import { Supplier, Tutorial } from '../types.ts';
-import { supabase } from '../lib/supabaseClient.ts';
-import { mockTutorials } from '../lib/data.ts';
+import { Supplier, Tutorial } from '../types.js';
+import { supabase } from '../lib/supabaseClient.js';
+import { mockTutorials } from '../lib/data.js';
 
 // --- Tutorials ---
 export const getTutorials = async (isAdmin: boolean = false): Promise<Tutorial[]> => {

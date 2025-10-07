@@ -1,4 +1,4 @@
-import { Report } from '../types.ts';
+import { Report } from '../types.js';
 import { GoogleGenAI, Type } from '@google/genai';
 
 // Helper to convert File to a base64 string for JSON transport

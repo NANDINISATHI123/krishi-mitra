@@ -1,3 +1,4 @@
+
 import type { Handler, HandlerEvent } from "@netlify/functions";
 import { GoogleGenAI, Type } from '@google/genai';
 
@@ -6,17 +7,16 @@ const handler: Handler = async (event: HandlerEvent) => {
   // CRITICAL FIX: The API key and AI client must be initialized *inside* the handler.
   // This ensures they are set up for each invocation, which is the correct pattern
   // for serverless functions and prevents deployment/runtime errors.
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-
-  if (!GEMINI_API_KEY) {
-    console.error("CRITICAL: GEMINI_API_KEY environment variable is not set.");
+  // FIX: Adhere to the guideline of exclusively using process.env.API_KEY
+  if (!process.env.API_KEY) {
+    console.error("CRITICAL: API_KEY environment variable is not set.");
     return {
       statusCode: 500,
       body: JSON.stringify({ error: "Server configuration error: API key is missing." }),
     };
   }
 
-  const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
