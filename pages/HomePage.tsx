@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useAppContext } from '../context/AppContext.js';
-import { mockTestimonials } from '../lib/data.js';
-import { UploadIcon, AiIcon, SolutionIcon, ArrowRightIcon } from '../components/Icons.js';
+import { useAppContext } from '../context/AppContext.tsx';
+import { mockTestimonials } from '../lib/data.ts';
+import { UploadIcon, AiIcon, SolutionIcon, ArrowRightIcon } from '../components/Icons.tsx';
 
 const HomePage = () => {
   const { t, language } = useAppContext();

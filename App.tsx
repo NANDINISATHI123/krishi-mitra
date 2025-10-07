@@ -1,18 +1,18 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
-import { AppContextProvider, useAppContext } from './context/AppContext.js';
-import Header from './components/Header.js';
-import Footer from './components/Footer.js';
-import HomePage from './pages/HomePage.js';
-import { CheckCircleIcon, CloseIcon, LogoIcon } from './components/Icons.js';
-import ToastContainer from './components/Toast.js';
+import { AppContextProvider, useAppContext } from './context/AppContext.tsx';
+import Header from './components/Header.tsx';
+import Footer from './components/Footer.tsx';
+import HomePage from './pages/HomePage.tsx';
+import { CheckCircleIcon, CloseIcon, LogoIcon } from './components/Icons.tsx';
+import ToastContainer from './components/Toast.tsx';
 
 // Lazy load dashboard components to enable code-splitting.
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard.js'));
-const EmployeeDashboard = lazy(() => import('./pages/EmployeeDashboard.js'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard.tsx'));
+const EmployeeDashboard = lazy(() => import('./pages/EmployeeDashboard.tsx'));
 
 // Lazy load authentication pages for faster initial load.
-const LoginPage = lazy(() => import('./pages/LoginPage.js'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage.js'));
+const LoginPage = lazy(() => import('./pages/LoginPage.tsx'));
+const RegisterPage = lazy(() => import('./pages/RegisterPage.tsx'));
 
 
 const DashboardLoader = () => (
