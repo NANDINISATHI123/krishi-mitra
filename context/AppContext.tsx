@@ -206,7 +206,7 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
 
     return (
         <AppContext.Provider value={value}>
-            {!authLoading && children}
+            {children}
         </AppContext.Provider>
     );
 };

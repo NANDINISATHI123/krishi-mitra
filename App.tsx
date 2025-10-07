@@ -11,7 +11,7 @@ import EmployeeDashboard from './pages/EmployeeDashboard.js';
 import { CheckCircleIcon, CloseIcon, LogoIcon } from './components/Icons.js';
 
 const Router = () => {
-    const { profile, user, profileLoading } = useAppContext();
+    const { profile, user, profileLoading, authLoading } = useAppContext();
     const [hash, setHash] = useState(() => window.location.hash);
 
     useEffect(() => {
@@ -24,6 +24,16 @@ const Router = () => {
 
     const path = hash.substring(1);
 
+    // Show a loading indicator while the app is checking the user's session.
+    if (authLoading) {
+        return (
+            <div className="flex flex-col justify-center items-center h-[calc(100vh-200px)]">
+                <LogoIcon className="h-20 w-20 text-primary animate-pulse" />
+                <p className="mt-4 text-lg font-semibold">Authenticating...</p>
+            </div>
+        );
+    }
+    
     // If the user is authenticated but we are still fetching their profile, show a loading screen.
     if (user && profileLoading) {
         return (

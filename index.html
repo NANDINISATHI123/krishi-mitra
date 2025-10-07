@@ -12,12 +12,33 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&family=Noto+Sans+Telugu:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/react-image-crop@11.0.5/dist/ReactCrop.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     
     <!-- FIX: Add Babel Standalone for in-browser TSX/JSX transpilation -->
     <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 
+    <!-- FIX: App Shell Loader Styles -->
+    <style>
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .app-shell-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        width: 100vw;
+        background-color: #F8F9FA;
+      }
+      .app-shell-loader {
+        width: 64px;
+        height: 64px;
+        animation: spin 1.5s linear infinite;
+        color: #4A6C4B; /* primary color */
+      }
+    </style>
+    <!-- END FIX -->
+    
     <script>
       // --- FIX: Register Service Worker as early as possible ---
       if ('serviceWorker' in navigator) {
@@ -82,9 +103,47 @@
 </script>
 </head>
   <body>
-    <div id="root"></div>
-    <!-- FIX: Point directly to .tsx file, allowing the Service Worker to handle the MIME type. Use absolute path for robustness. -->
-    <script type="text/babel" data-presets="react,typescript" src="/index.tsx"></script>
+    <!-- FIX: App Shell Loader Markup -->
+    <div id="root">
+      <div class="app-shell-container">
+        <svg class="app-shell-loader" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21.35,11.1H12.9V1.43a.79.79,0,0,0-.8-.79H11.31a.79.79,0,0,0-.79.79v9.67H1.84a.79.79,0,0,0-.79.79v.79a.79.79,0,0,0,.79.79h8.68V22.57a.79.79,0,0,0,.79.79h.79a.79.79,0,0,0,.79-.79V13.47h8.45a.79.79,0,0,0,.79-.79v-.79A.79.79,0,0,0,21.35,11.1Z" />
+        </svg>
+      </div>
+    </div>
+    
+    <!-- FIX: Defer non-critical scripts to prevent render-blocking -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+
+    <!-- FIX: Replaced direct script load with a loader script to wait for the service worker.
+         This solves the race condition on initial load where the browser might request
+         index.tsx before the service worker is active to handle the MIME type. -->
+    <script>
+      function loadApp() {
+        console.log('[SW Loader] Service worker is active, loading app script.');
+        const script = document.createElement('script');
+        script.type = 'text/babel';
+        script.setAttribute('data-presets', 'react,typescript');
+        script.src = '/index.tsx';
+        document.body.appendChild(script);
+      }
+
+      if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+        // SW is already in control, load immediately.
+        loadApp();
+      } else if (navigator.serviceWorker) {
+        // Wait for the new SW to take control.
+        console.log('[SW Loader] Waiting for service worker controller...');
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          loadApp();
+        });
+      } else {
+        // Service workers not supported, load directly as a fallback.
+        console.warn('[SW Loader] Service workers not supported. Loading app script directly.');
+        loadApp();
+      }
+    </script>
     
   </body>
 </html>
