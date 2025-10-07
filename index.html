@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%234A6C4B'%3e%3cpath d='M21.35 11.1H12.9V1.43a.79.79 0 0 0-.8-.79h-.79a.79.79 0 0 0-.79.79v9.67H1.84a.79.79 0 0 0-.79.79v.79a.79.79 0 0 0 .79.79h8.68V22.57a.79.79 0 0 0 .79.79h.79a.79.79 0 0 0 .79-.79V13.47h8.45a.79.79 0 0 0 .79-.79v-.79a.79.79 0 0 0-.79-.79z'/%3e%3c/svg%3e" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Krishi Mitra | AI-Powered Organic Farming Assistant</title>
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#4A6C4B">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -111,8 +111,8 @@
       // Register Service Worker as early as possible.
       // The app's functionality does not depend on this, it's for offline caching.
       if ('serviceWorker' in navigator) {
-          // Use a root-relative path to be more resilient to deployment environments.
-          navigator.serviceWorker.register('/service-worker.js')
+          // Use an explicitly relative path to be more resilient to deployment environments.
+          navigator.serviceWorker.register('./service-worker.js')
               .then(registration => {
                   console.log('ServiceWorker registration successful with scope: ', registration.scope);
               })
@@ -237,7 +237,7 @@
         const script = document.createElement('script');
         script.type = 'text/babel';
         script.setAttribute('data-presets', 'react,typescript');
-        script.src = '/index.tsx';
+        script.src = './index.tsx';
         document.body.appendChild(script);
       })();
     </script>
