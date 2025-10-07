@@ -4,11 +4,11 @@ const CACHE_NAME = 'krishi-mitra-static-v10'; // INCREMENTED VERSION TO FORCE UP
 const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v10'; // INCREMENTED VERSION
 
 // App Shell: All the essential files for the app to run.
-// Using relative paths for robustness on deployed environments.
+// Using root-relative paths for robustness on deployed environments.
 const APP_SHELL_FILES = [
-  'index.html',
-  'manifest.json',
-  'logo.svg',
+  '/',
+  '/manifest.json',
+  '/logo.svg',
 ];
 
 
@@ -17,7 +17,11 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log('[SW] Precaching App Shell...');
-      return cache.addAll(APP_SHELL_FILES).then(() => self.skipWaiting()); // Force activation
+      // Use a new Request object for '/' to cache index.html correctly.
+      const indexRequest = new Request('/', { mode: 'navigate' });
+      return cache.add(indexRequest).then(() => {
+        return cache.addAll(APP_SHELL_FILES.filter(url => url !== '/'));
+      }).then(() => self.skipWaiting()); // Force activation
     })
   );
 });
@@ -136,6 +140,12 @@ self.addEventListener('fetch', event => {
     }
     
     // --- STRATEGY 4: Stale-While-Revalidate for App Assets ---
+    // Handle navigation requests (e.g., page reloads) by serving the cached index.html
+    if (request.mode === 'navigate') {
+        event.respondWith(caches.match('/'));
+        return;
+    }
+
     event.respondWith(
         caches.match(request).then(response => {
             const fetchPromise = fetch(request).then(networkResponse => {
