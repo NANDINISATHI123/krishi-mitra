@@ -17,87 +17,95 @@
 
     <!-- High-Fidelity App Shell Styles -->
     <style>
-      /* Base variables matching tailwind config for the shell */
       :root {
         --color-primary: #4A6C4B;
         --color-primary-dark: #385239;
+        --color-secondary: #E4C59E;
         --color-bg-light: #F8F9FA;
         --color-bg-dark: #181A1B;
         --color-text-light: #212529;
         --color-text-dark: #E9ECEF;
       }
-      
       .app-shell-body {
         font-family: 'PT Sans', sans-serif;
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        background-color: var(--color-bg-light);
-        color: var(--color-text-light);
+        display: flex; flex-direction: column; min-height: 100vh;
+        background-color: var(--color-bg-light); color: var(--color-text-light);
       }
-      
       .app-shell-header {
         box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         background-color: rgba(248, 249, 250, 0.8);
-        -webkit-backdrop-filter: blur(4px);
-        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
       }
-      
       .app-shell-container {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding: 0.75rem 1rem;
-        display: flex;
-        align-items: center;
+        max-width: 1280px; margin: 0 auto; padding: 0.75rem 1rem;
+        display: flex; align-items: center; justify-content: space-between;
       }
-      
       .app-shell-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: var(--color-primary);
-        font-family: 'PT Sans', sans-serif;
+        font-size: 1.5rem; font-weight: 700; color: var(--color-primary);
       }
-
-      .app-shell-main {
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
+      .app-shell-nav a {
+        font-size: 1.125rem; color: var(--color-text-light); text-decoration: none;
       }
-      
-      @keyframes spin {
-        to { transform: rotate(360deg); }
+      .app-shell-nav a.app-shell-button {
+        background-color: var(--color-primary); color: white;
+        padding: 0.5rem 1rem; border-radius: 9999px;
       }
-      .app-shell-spinner {
-        width: 2rem;
-        height: 2rem;
-        animation: spin 1s linear infinite;
-        color: var(--color-primary);
-      }
-
+      .app-shell-main { flex-grow: 1; }
       .app-shell-footer {
-        background-color: var(--color-primary-dark);
-        color: white;
-        padding: 1rem;
-        text-align: center;
+        background-color: var(--color-primary-dark); color: white;
+        padding: 1rem; text-align: center;
       }
-      
+      /* --- Static Homepage Content Styles --- */
+      .app-shell-hero {
+        min-height: 70vh; display: flex; align-items: center; justify-content: center;
+        text-align: center; padding: 2rem 1rem;
+      }
+      .app-shell-hero-title {
+        font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.2;
+      }
+      .app-shell-hero-subtitle {
+        font-size: 1.125rem; max-width: 48rem; margin: 0 auto 2rem;
+      }
+      .app-shell-hero-button {
+        background-color: var(--color-primary); color: white; padding: 1rem 2rem;
+        border-radius: 9999px; font-size: 1.125rem; font-weight: 700;
+        text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;
+      }
+      .app-shell-how-works { padding: 5rem 1rem; }
+      .app-shell-section-title {
+        font-size: 2.25rem; font-weight: 700; text-align: center; margin-bottom: 3rem;
+      }
+      .app-shell-grid {
+        display: grid; gap: 2rem; max-width: 1280px; margin: auto;
+      }
+      .app-shell-card {
+        background-color: white; padding: 1.5rem; border-radius: 0.5rem; text-align: center;
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      }
+      .app-shell-card-icon {
+        display: flex; justify-content: center; align-items: center; margin-bottom: 1rem;
+        color: var(--color-primary);
+      }
+      .app-shell-card-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; }
+      .app-shell-card-desc { color: #4B5563; }
+
+      @media (min-width: 768px) {
+        .app-shell-hero-title { font-size: 3.75rem; }
+        .app-shell-hero-subtitle { font-size: 1.25rem; }
+        .app-shell-grid { grid-template-columns: repeat(3, 1fr); }
+      }
+
       /* Dark mode for shell */
       @media (prefers-color-scheme: dark) {
-        .app-shell-body {
-          background-color: var(--color-bg-dark);
-          color: var(--color-text-dark);
-        }
-        .app-shell-header {
-           background-color: rgba(24, 26, 27, 0.8);
-        }
-        .app-shell-title {
-            color: #6B8E6B; /* primary-light */
-        }
+        .app-shell-body { background-color: var(--color-bg-dark); color: var(--color-text-dark); }
+        .app-shell-header { background-color: rgba(24, 26, 27, 0.8); }
+        .app-shell-title { color: #6B8E6B; }
+        .app-shell-nav a { color: var(--color-text-dark); }
+        .app-shell-card { background-color: #2D3748; }
+        .app-shell-card-title { color: var(--color-text-dark); }
+        .app-shell-card-desc { color: #A0AEC0; }
       }
     </style>
-    <!-- END App Shell -->
     
     <script>
       // Register Service Worker as early as possible
@@ -156,20 +164,59 @@
       <div class="app-shell-body">
           <header class="app-shell-header">
               <div class="app-shell-container">
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <a href="#" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
                       <svg style="height: 2.5rem; width: 2.5rem; color: var(--color-primary);" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path d="M21.35,11.1H12.9V1.43a.79.79,0,0,0-.8-.79H11.31a.79.79,0,0,0-.79.79v9.67H1.84a.79.79,0,0,0-.79.79v.79a.79.79,0,0,0,.79.79h8.68V22.57a.79.79,0,0,0,.79.79h.79a.79.79,0,0,0,.79-.79V13.47h8.45a.79.79,0,0,0,.79-.79v-.79A.79.79,0,0,0,21.35,11.1Z" />
                       </svg>
                       <span class="app-shell-title">Krishi Mitra</span>
-                  </div>
+                  </a>
+                  <nav class="app-shell-nav" style="display: flex; align-items: center; gap: 1.5rem;">
+                     <a href="#">Home</a>
+                     <a href="#login">Login</a>
+                     <a href="#register" class="app-shell-button">Register</a>
+                  </nav>
               </div>
           </header>
           <main class="app-shell-main">
-               <svg class="app-shell-spinner" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h5M20 20v-5h-5" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 9a9 9 0 0114.48-5.23M20 15a9 9 0 01-14.48 5.23" />
-              </svg>
-              <p style="margin-top: 0.5rem; font-size: 0.875rem;">Loading Application...</p>
+            <!-- Static Homepage Content -->
+            <section class="app-shell-hero">
+              <div>
+                <h1 class="app-shell-hero-title">Smarter Farming, Healthier Crops</h1>
+                <p class="app-shell-hero-subtitle">Leverage AI to diagnose crop diseases, get timely weather alerts, and access a wealth of agricultural knowledge. All in your language.</p>
+                <a href="#register" class="app-shell-hero-button">
+                  Get Started
+                  <svg xmlns="http://www.w3.org/2000/svg" style="width: 1.25rem; height: 1.25rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+              </div>
+            </section>
+            <section class="app-shell-how-works">
+                <h2 class="app-shell-section-title">How It Works</h2>
+                <div class="app-shell-grid">
+                    <div class="app-shell-card">
+                        <div class="app-shell-card-icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" style="width: 4rem; height: 4rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                        </div>
+                        <h3 class="app-shell-card-title">Upload a Photo</h3>
+                        <p class="app-shell-card-desc">Take a clear picture of the affected crop or leaf and upload it through our simple interface.</p>
+                    </div>
+                    <div class="app-shell-card">
+                        <div class="app-shell-card-icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" style="width: 4rem; height: 4rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                        </div>
+                        <h3 class="app-shell-card-title">AI Analysis</h3>
+                        <p class="app-shell-card-desc">Our advanced AI model analyzes the image in seconds to identify potential diseases and issues.</p>
+                    </div>
+                    <div class="app-shell-card">
+                        <div class="app-shell-card-icon">
+                          <svg xmlns="http://www.w3.org/2000/svg" style="width: 4rem; height: 4rem;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h3 class="app-shell-card-title">Get Solutions</h3>
+                        <p class="app-shell-card-desc">Receive a detailed report with the diagnosis, confidence score, and recommended organic treatments.</p>
+                    </div>
+                </div>
+            </section>
           </main>
           <footer class="app-shell-footer">
               <p>© 2024 Krishi Mitra. Empowering Farmers with AI.</p>
