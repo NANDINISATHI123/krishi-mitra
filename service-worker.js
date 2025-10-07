@@ -1,10 +1,9 @@
 // --- Service Worker for Krishi Mitra ---
 
-const CACHE_NAME = 'krishi-mitra-static-v10'; // INCREMENTED VERSION TO FORCE UPDATE
-const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v10'; // INCREMENTED VERSION
+const CACHE_NAME = 'krishi-mitra-static-v11'; // INCREMENTED VERSION
+const DYNAMIC_CACHE_NAME = 'krishi-mitra-dynamic-v11'; // INCREMENTED VERSION
 
 // App Shell: All the essential files for the app to run.
-// Using root-relative paths for robustness on deployed environments.
 const APP_SHELL_FILES = [
   '/',
   '/manifest.json',
@@ -17,12 +16,8 @@ self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       console.log('[SW] Precaching App Shell...');
-      // Use a new Request object for '/' to cache index.html correctly.
-      const indexRequest = new Request('/', { mode: 'navigate' });
-      return cache.add(indexRequest).then(() => {
-        return cache.addAll(APP_SHELL_FILES.filter(url => url !== '/'));
-      }).then(() => self.skipWaiting()); // Force activation
-    })
+      return cache.addAll(APP_SHELL_FILES);
+    }).then(() => self.skipWaiting()) // Force the new service worker to activate immediately
   );
 });
 
@@ -36,127 +31,55 @@ self.addEventListener('activate', event => {
           return caches.delete(key);
         }
       }));
-    }).then(() => self.clients.claim()) // Take control of all open clients
+    }).then(() => self.clients.claim()) // Take control of all open pages
   );
 });
 
+// A robust, standard stale-while-revalidate fetch handler
 self.addEventListener('fetch', event => {
     const { request } = event;
     const url = new URL(request.url);
 
-    // Only handle GET requests
-    if (request.method !== 'GET') {
-        return;
-    }
-    
-    // --- FIX: Exclude Netlify functions from interception ---
+    // Ignore API calls to Netlify functions
     if (url.pathname.startsWith('/.netlify/functions/')) {
-        return; // Let the browser handle this network request normally.
-    }
-
-    // --- STRATEGY 1A: Fix MIME type for direct TSX/TS requests ---
-    // Handles index.tsx from index.html and any other direct .ts(x) requests.
-    if (url.origin === self.location.origin && (url.pathname.endsWith('.tsx') || url.pathname.endsWith('.ts'))) {
-        event.respondWith(
-            fetch(request).then(response => {
-                if (response.ok) {
-                    return response.text().then(code => {
-                        return new Response(code, {
-                            headers: { 'Content-Type': 'application/javascript' }
-                        });
-                    });
-                }
-                return response;
-            }).catch(err => {
-                 console.error('[SW] Fetch failed for TS(X) file, trying cache.', err);
-                 return caches.match(request);
-            })
-        );
-        return;
-    }
-
-    // --- IMPROVED: STRATEGY 1B: TSX/TS to JS rewrite for module imports with Caching ---
-    if (url.origin === self.location.origin && url.pathname.endsWith('.js')) {
-        event.respondWith(
-            caches.match(request).then(cachedResponse => {
-                if (cachedResponse) {
-                    return cachedResponse;
-                }
-
-                const fetchAndCache = async (path) => {
-                    try {
-                        const response = await fetch(path);
-                        if (response.ok) {
-                            const code = await response.text();
-                            const jsResponse = new Response(code, { headers: { 'Content-Type': 'application/javascript' } });
-                            
-                            const cache = await caches.open(DYNAMIC_CACHE_NAME);
-                            cache.put(request, jsResponse.clone());
-
-                            return jsResponse;
-                        }
-                    } catch (e) { /* Ignore fetch errors */ }
-                    return null;
-                };
-                
-                return (async () => {
-                    const tsxPath = url.pathname.replace(/\.js$/, '.tsx');
-                    const tsPath = url.pathname.replace(/\.js$/, '.ts');
-
-                    const tsxResult = await fetchAndCache(tsxPath);
-                    if (tsxResult) return tsxResult;
-
-                    const tsResult = await fetchAndCache(tsPath);
-                    if (tsResult) return tsResult;
-                    
-                    // Fallback for real .js files (e.g., from importmap)
-                    return fetch(request);
-                })();
-            })
-        );
-        return;
-    }
-
-
-    // --- STRATEGY 2: Network-Only for Cross-Origin ---
-    if (url.origin !== self.location.origin) {
-        event.respondWith(fetch(request));
-        return;
-    }
-
-    // --- STRATEGY 3: Cache-First for Local Media ---
-    if (url.pathname.match(/\.(mp4|jpg|png|jpeg|svg|gif)$/)) {
-        event.respondWith(
-            caches.match(request).then(response => {
-                return response || fetch(request).then(fetchRes => {
-                    return caches.open(DYNAMIC_CACHE_NAME).then(cache => {
-                        cache.put(request.url, fetchRes.clone());
-                        return fetchRes;
-                    });
-                });
-            })
-        );
-        return;
+        return; 
     }
     
-    // --- STRATEGY 4: Stale-While-Revalidate for App Assets ---
-    // Handle navigation requests (e.g., page reloads) by serving the cached index.html
-    if (request.mode === 'navigate') {
-        event.respondWith(caches.match('/'));
+    // Ignore cross-origin requests (e.g., Google Fonts, CDNs)
+    if (url.origin !== self.location.origin) {
         return;
     }
 
+    // For navigation requests (the HTML page itself), go network-first.
+    // This ensures users get the latest HTML, but falls back to cache if offline.
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            fetch(request).catch(() => {
+                console.log('[SW] Fetch failed for navigation, serving app shell from cache.');
+                return caches.match('/');
+            })
+        );
+        return;
+    }
+
+    // For all other assets (TSX, CSS, images), use Stale-While-Revalidate.
+    // This serves the cached version immediately for speed, then updates the cache
+    // in the background with a fresh network request.
     event.respondWith(
-        caches.match(request).then(response => {
+        caches.match(request).then(cachedResponse => {
             const fetchPromise = fetch(request).then(networkResponse => {
+                // If we get a valid response, update the dynamic cache.
                 caches.open(DYNAMIC_CACHE_NAME).then(cache => {
                     cache.put(request, networkResponse.clone());
                 });
                 return networkResponse;
             }).catch(err => {
-                 console.warn('[SW] Fetch failed, serving from cache if available.', err);
+                console.warn(`[SW] Fetch failed for ${request.url}. Serving from cache if available.`, err);
+                // If fetch fails and we have a cached response, it will have already been returned.
             });
-            return response || fetchPromise;
+
+            // Return cached response immediately if it exists, otherwise wait for the network.
+            return cachedResponse || fetchPromise;
         })
     );
 });

@@ -108,9 +108,11 @@
     </style>
     
     <script>
-      // Register Service Worker as early as possible
+      // Register Service Worker as early as possible.
+      // The app's functionality does not depend on this, it's for offline caching.
       if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.register('/service-worker.js')
+          // Use a root-relative path to be more resilient to deployment environments.
+          navigator.serviceWorker.register('./service-worker.js')
               .then(registration => {
                   console.log('ServiceWorker registration successful with scope: ', registration.scope);
               })
@@ -228,33 +230,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 
-    <!-- Robust script that waits for the service worker to be ready before loading the app. -->
+    <!-- Robust script that loads the app immediately without blocking on the service worker -->
     <script>
-      function loadApp() {
-        console.log('[SW Loader] Conditions met, loading app script.');
+      (function loadApp() {
+        console.log('[App Loader] Loading main application script immediately.');
         const script = document.createElement('script');
         script.type = 'text/babel';
         script.setAttribute('data-presets', 'react,typescript');
         script.src = '/index.tsx';
         document.body.appendChild(script);
-      }
-
-      // Use navigator.serviceWorker.ready, which is a promise that resolves
-      // when the service worker is active. This is the most reliable way
-      // to ensure it's ready to intercept requests.
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.ready.then((registration) => {
-          console.log('[SW Loader] Service worker is ready.', registration);
-          loadApp();
-        }).catch(error => {
-          console.error('[SW Loader] Service worker failed to become ready, loading app directly as fallback.', error);
-          loadApp();
-        });
-      } else {
-        // Service workers not supported, load directly.
-        console.warn('[SW Loader] Service workers not supported. Loading app script directly.');
-        loadApp();
-      }
+      })();
     </script>
     
   </body>
