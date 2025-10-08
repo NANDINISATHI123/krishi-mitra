@@ -4,7 +4,7 @@ import { getRealDiagnosis } from '../../services/geminiService.ts';
 import { getReportsForUser, addReport } from '../../services/reportService.ts';
 import { addActionToQueue } from '../../services/offlineService.ts';
 import { Report } from '../../types.ts';
-import { UploadIcon, CloseIcon, ArrowRightIcon } from '../Icons.tsx';
+import { UploadIcon, CloseIcon, ArrowRightIcon, ErrorIcon, AiIcon } from '../Icons.tsx';
 import SkeletonLoader from '../SkeletonLoader.tsx';
 
 // --- Image Cropper Component (since we cannot add new files/dependencies) ---
@@ -100,6 +100,7 @@ const AIDiagnosis = () => {
 
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<DiagnosisResult | null>(null);
+    const [diagnosisError, setDiagnosisError] = useState<{type: 'not_plant' | 'unclear' | 'api_fail', message: string} | null>(null);
     
     const [history, setHistory] = useState<Report[]>([]);
     const [historyLoading, setHistoryLoading] = useState(true);
@@ -127,6 +128,7 @@ const AIDiagnosis = () => {
         setResult(null);
         setLoading(false);
         setSelectedReport(null);
+        setDiagnosisError(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
@@ -155,18 +157,19 @@ const AIDiagnosis = () => {
         setLoading(true);
         setResult(null);
         setSelectedReport(null);
+        setDiagnosisError(null);
 
         if (isOnline) {
             try {
                 const diagnosisResult = await getRealDiagnosis(imageFile);
 
                 if (!diagnosisResult.is_plant) {
-                    showToast(t('error_not_a_plant'), 'error');
+                    setDiagnosisError({ type: 'not_plant', message: t('error_not_a_plant') });
                     setLoading(false);
                     return;
                 }
                 if (!diagnosisResult.is_identifiable) {
-                    showToast(t('error_unclear_image'), 'error');
+                    setDiagnosisError({ type: 'unclear', message: t('error_unclear_image') });
                     setLoading(false);
                     return;
                 }
@@ -198,7 +201,7 @@ const AIDiagnosis = () => {
 
             } catch (err) {
                 console.error("Diagnosis failed:", err);
-                showToast(t('error_diagnosis_failed'), 'error');
+                setDiagnosisError({ type: 'api_fail', message: t('error_diagnosis_failed') });
             }
         } else {
             const reportData = { user_id: user.id, user_email: profile.email };
@@ -290,6 +293,64 @@ const AIDiagnosis = () => {
         </div>
     );
     
+    const DiagnosisErrorState = ({ error, onRetry, onReset }: { error: { type: string, message: string }, onRetry: () => void, onReset: () => void }) => {
+        return (
+            <div className="text-center p-4 flex flex-col items-center justify-center min-h-[300px]">
+                <ErrorIcon className="w-12 h-12 mx-auto text-red-500" />
+                <h3 className="text-xl font-semibold mt-4 mb-2 text-text-light dark:text-text-dark">Diagnosis Failed</h3>
+                <p className="text-gray-600 dark:text-gray-400 mb-6">{error.message}</p>
+                <div className="flex flex-col sm:flex-row justify-center gap-4 w-full">
+                    <button onClick={onReset} className="bg-primary text-white px-4 py-2 rounded-md font-semibold hover:bg-primary-dark w-full sm:w-auto">
+                        Upload New Photo
+                    </button>
+                    {error.type === 'api_fail' && (
+                        <button onClick={onRetry} className="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 px-4 py-2 rounded-md font-semibold hover:bg-gray-400 dark:hover:bg-gray-500 w-full sm:w-auto">
+                           Try Again
+                        </button>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
+    const DiagnosisLoadingState = () => {
+        return (
+            <div className="text-center p-8 flex flex-col items-center justify-center min-h-[300px]">
+                <AiIcon className="w-16 h-16 mx-auto text-primary animate-pulse" />
+                <p className="mt-4 text-lg font-semibold text-text-light dark:text-text-dark">Analyzing your image...</p>
+                <p className="text-gray-500 dark:text-gray-400">This may take a few moments.</p>
+            </div>
+        );
+    };
+
+    const renderUploadForm = () => (
+        <>
+            <h2 className="text-2xl font-semibold mb-4">{t('upload_crop_image')}</h2>
+            <div
+                className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+                onDrop={(e) => { e.preventDefault(); handleFileChange(e.dataTransfer.files); }}
+                onDragOver={(e) => e.preventDefault()}
+            >
+                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e.target.files)} />
+                <UploadIcon className="w-12 h-12 mx-auto text-gray-400" />
+                <p className="mt-2 text-base text-gray-600 dark:text-gray-400">Drag & drop or click to upload</p>
+            </div>
+
+            {imagePreview && (
+                <div className="mt-4 relative">
+                    <img src={imagePreview} alt="Preview" className="w-full h-auto rounded-lg" />
+                    <button onClick={() => {setImageFile(null); setImagePreview(null);}} className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 hover:bg-black/70"><CloseIcon className="w-5 h-5"/></button>
+                </div>
+            )}
+
+            <button onClick={handleDiagnose} disabled={!imageFile} className="w-full mt-4 bg-primary text-white py-3 rounded-md font-bold hover:bg-primary-dark disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                {t('diagnose')}
+                <ArrowRightIcon />
+            </button>
+        </>
+    );
+
     return (
         <div>
              {uncroppedImage && (
@@ -305,29 +366,12 @@ const AIDiagnosis = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                     <div className="lg:col-span-2">
                         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-                            <h2 className="text-2xl font-semibold mb-4">{t('upload_crop_image')}</h2>
-                            <div
-                                className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-primary transition-colors"
-                                onClick={() => fileInputRef.current?.click()}
-                                onDrop={(e) => { e.preventDefault(); handleFileChange(e.dataTransfer.files); }}
-                                onDragOver={(e) => e.preventDefault()}
-                            >
-                                <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleFileChange(e.target.files)} />
-                                <UploadIcon className="w-12 h-12 mx-auto text-gray-400" />
-                                <p className="mt-2 text-base text-gray-600 dark:text-gray-400">Drag & drop or click to upload</p>
-                            </div>
-
-                            {imagePreview && (
-                                <div className="mt-4 relative">
-                                    <img src={imagePreview} alt="Preview" className="w-full h-auto rounded-lg" />
-                                    <button onClick={() => {setImageFile(null); setImagePreview(null);}} className="absolute top-2 right-2 bg-black/50 text-white rounded-full p-1 hover:bg-black/70"><CloseIcon className="w-5 h-5"/></button>
-                                </div>
-                            )}
-
-                            <button onClick={handleDiagnose} disabled={!imageFile || loading} className="w-full mt-4 bg-primary text-white py-3 rounded-md font-bold hover:bg-primary-dark disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                                {loading ? 'Analyzing...' : t('diagnose')}
-                                {!loading && <ArrowRightIcon />}
-                            </button>
+                           {loading 
+                                ? <DiagnosisLoadingState />
+                                : diagnosisError 
+                                ? <DiagnosisErrorState error={diagnosisError} onRetry={handleDiagnose} onReset={resetState} />
+                                : renderUploadForm()
+                            }
                         </div>
                     </div>
 

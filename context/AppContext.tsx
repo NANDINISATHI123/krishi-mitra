@@ -77,40 +77,46 @@ export const AppContextProvider: React.FC<{ children: ReactNode }> = ({ children
     const fetchProfileAndSet = useCallback(async (userToFetch: User | null) => {
         if (!userToFetch) {
             setProfile(null);
-            setProfileLoading(false);
             return;
         }
 
         setProfileLoading(true);
         try {
-            const { data: profileData, error: fetchError } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', userToFetch.id)
-                .maybeSingle();
+            let profileData: Profile | null = null;
+            // Retry logic to handle DB trigger latency on new user creation.
+            for (let i = 0; i < 3; i++) {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', userToFetch.id)
+                    .maybeSingle();
+                
+                if (error) throw error; // If there's a real DB error, throw it.
 
-            if (fetchError) throw fetchError;
-
+                if (data) {
+                    profileData = data;
+                    break; // Profile found, exit loop.
+                }
+                
+                if (i < 2) { // Don't wait after the last attempt
+                    console.log(`Profile not found on attempt ${i + 1}, retrying...`);
+                    await new Promise(res => setTimeout(res, 500 * (i + 1)));
+                }
+            }
+            
             if (profileData) {
                 setProfile(profileData);
             } else {
-                console.warn(`No profile found for user ${userToFetch.id}, creating one.`);
-                const { data: newProfile, error: insertError } = await supabase
-                    .from('profiles')
-                    .insert({
-                        id: userToFetch.id,
-                        email: userToFetch.email,
-                        name: userToFetch.user_metadata.name || userToFetch.email,
-                        role: 'employee'
-                    })
-                    .select()
-                    .single();
-                
-                if (insertError) throw insertError;
-                setProfile(newProfile);
+                // If profile is still not found after retries, it indicates a server-side issue.
+                // Log the user out to prevent an inconsistent state.
+                console.error(`Profile not found for user ${userToFetch.id} after multiple retries. The backend trigger might be misconfigured. Signing out.`);
+                showToast(t('error_generic'), 'error');
+                await supabase.auth.signOut();
+                setProfile(null); 
             }
         } catch (error) {
-            console.error("Critical error fetching or creating profile:", error);
+            // This catches database-level errors during the fetch attempts.
+            console.error("Critical error fetching profile:", error);
             showToast(t('error_generic'), 'error');
             await supabase.auth.signOut();
             setProfile(null); 

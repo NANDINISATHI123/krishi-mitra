@@ -32,8 +32,9 @@ const RegisterPage = () => {
             password: password.trim(),
             options: {
                 data: {
+                    // We only pass the name. The user's role is assigned securely
+                    // by a database trigger on the server, defaulting to 'employee'.
                     name: name.trim(),
-                    role: 'employee', // All sign-ups are employees
                 },
             },
         });
